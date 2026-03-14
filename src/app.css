@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Homemade+Apple&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .signature {
+    font-family: 'Homemade Apple', cursive;
+    @apply antialiased;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-sans tracking-tight;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-6 lg:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-6xl mx-auto px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-ink text-white px-6 py-3 text-sm font-medium tracking-wide hover:bg-ink-light transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border border-ink text-ink px-6 py-3 text-sm font-medium tracking-wide hover:bg-ink hover:text-white transition-colors duration-200;
+  }
+
+  .tag {
+    @apply inline-block text-xs font-medium uppercase tracking-widest text-ink-muted border border-border px-2 py-1;
+  }
+
+  .card-hover {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+
+  .map-container {
+    @apply w-full rounded-none overflow-hidden;
+  }
+
+  .divider {
+    @apply border-t border-border;
+  }
+}
+
+/* MapLibre overrides */
+.maplibregl-map {
+  font-family: 'Inter', sans-serif;
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 10px;
+}
