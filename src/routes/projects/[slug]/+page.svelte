@@ -2,9 +2,8 @@
   import MapViewer from '$lib/components/MapViewer.svelte';
   import SEO from '$lib/components/SEO.svelte';
 
-  /** @type {import('./$types').PageData} */
-  export let data;
-  $: project = data.project;
+  let { data } = $props();
+  let project = $derived(data?.project);
 
   const cityCoords = {
     "Hyderabad, Telangana": { lat: 17.385, lng: 78.4867 },
@@ -12,7 +11,7 @@
     "Vijayawada Region, AP": { lat: 16.5062, lng: 80.648 },
   };
 
-  $: coords = cityCoords[project.city] || { lat: 17.0, lng: 79.0 };
+  let coords = $derived(project ? (cityCoords[project.city] || { lat: 17.0, lng: 79.0 }) : { lat: 17.0, lng: 79.0 });
 
   const sections = [
     { key: 'context', label: 'Context' },
@@ -22,7 +21,7 @@
     { key: 'insights', label: 'Insights' },
     { key: 'outcome', label: 'Outcome' },
   ];
-  const breadcrumbsJsonLd = {
+  let breadcrumbsJsonLd = $derived(project ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
@@ -30,9 +29,10 @@
       { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://bharatoraon.com/projects" },
       { "@type": "ListItem", "position": 3, "name": project.title, "item": `https://bharatoraon.com/projects/${project.slug}` }
     ]
-  };
+  } : null);
 </script>
 
+{#if project}
 <SEO 
   title="{project.title} — Bharat Oraon"
   description={project.shortDescription}
@@ -110,3 +110,4 @@
     </div>
   </div>
 </section>
+{/if}

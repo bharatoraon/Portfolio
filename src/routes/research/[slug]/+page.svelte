@@ -1,9 +1,9 @@
 <script>
   import SEO from '$lib/components/SEO.svelte';
-  /** @type {import('./$types').PageData} */
-  export let data;
-  $: article = data.article;
-  const breadcrumbsJsonLd = {
+  let { data } = $props();
+  let article = $derived(data?.article);
+
+  let breadcrumbsJsonLd = $derived(article ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
@@ -11,9 +11,9 @@
       { "@type": "ListItem", "position": 2, "name": "Research", "item": "https://bharatoraon.com/research" },
       { "@type": "ListItem", "position": 3, "name": article.title, "item": `https://bharatoraon.com/research/${article.slug}` }
     ]
-  };
+  } : null);
 
-  const articleJsonLd = {
+  let articleJsonLd = $derived(article ? {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     "headline": article.title,
@@ -23,9 +23,10 @@
       "@type": "Person",
       "name": "Bharat Oraon"
     }
-  };
+  } : null);
 </script>
 
+{#if article}
 <SEO 
   title="{article.title} — Bharat Oraon"
   description={article.excerpt}
@@ -116,3 +117,4 @@
     </div>
   </div>
 </article>
+{/if}
