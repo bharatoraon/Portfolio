@@ -10,17 +10,17 @@ export const research = [
     excerpt:
       "Three decades after the 74th Constitutional Amendment Act promised decentralisation, Indian urban local bodies remain structurally weak, fiscally constrained, and functionally fragmented. This essay examines why ULBs continue to struggle for meaningful autonomy and what institutional reforms are needed.",
     content: `
-The 74th Constitutional Amendment Act (1992) was a watershed moment in India's urban governance history. It promised to transform Urban Local Bodies (ULBs) into self-governing institutions with defined functions, finances, and functionaries — the three F's of decentralisation. Three decades later, the promise remains largely unfulfilled.
+The 74th Constitutional Amendment Act (1992) was a watershed moment in India's urban governance history. It promised to transform Urban Local Bodies (ULBs) into self-governing institutions with defined functions, finances, and functionaries  the three F's of decentralisation. Three decades later, the promise remains largely unfulfilled.
 
 ## The Implementation Gap
 
-State governments have been reluctant to devolve meaningful functions to ULBs. The 18 functions listed in the 12th Schedule — which includes urban planning, regulation of land use, and urban poverty alleviation — remain largely with state-level parastatals and development authorities.
+State governments have been reluctant to devolve meaningful functions to ULBs. The 18 functions listed in the 12th Schedule  which includes urban planning, regulation of land use, and urban poverty alleviation  remain largely with state-level parastatals and development authorities.
 
 Hyderabad's Outer Ring Road was planned by HMDA (Hyderabad Metropolitan Development Authority), not by the GHMC (Greater Hyderabad Municipal Corporation). Bengaluru's metro is run by BMRCL, a state-level body. In nearly every Indian city, the most consequential urban infrastructure decisions are made by agencies that bypass the elected ULB entirely.
 
 ## Fiscal Fragility
 
-Indian ULBs are among the most fiscally dependent urban governments in the world. Own-source revenue averages just 40–50% of total expenditure for large corporations — and this drops dramatically for smaller ULBs. Property tax collection remains chronically below potential across most Indian cities.
+Indian ULBs are among the most fiscally dependent urban governments in the world. Own-source revenue averages just 40–50% of total expenditure for large corporations  and this drops dramatically for smaller ULBs. Property tax collection remains chronically below potential across most Indian cities.
 
 The 15th Finance Commission did introduce a performance-based urban grant mechanism and mandated direct transfers to ULBs, but implementation has been uneven. Most ULBs lack the technical capacity to produce the audited financial statements required to access these grants.
 
@@ -45,21 +45,21 @@ Urban India needs cities that govern themselves. The 74th CAA gave Indian cities
     category: "Planning Essay",
     tags: ["Street Design", "Public Space", "Pedestrian", "Urban Design"],
     excerpt:
-      "Indian cities have been systematically designed for vehicles, not people. This essay argues for a fundamental shift in street design philosophy — towards complete streets that prioritize pedestrian movement, public life, and equitable access.",
+      "Indian cities have been systematically designed for vehicles, not people. This essay argues for a fundamental shift in street design philosophy  towards complete streets that prioritize pedestrian movement, public life, and equitable access.",
     content: `
 Walk through most Indian cities and you encounter the same hostile street environment: narrow or non-existent footpaths, encroached pedestrian space, chaotic intersections with no safe pedestrian crossings, and streets engineered almost entirely for vehicular throughput.
 
-This is not an accident. It is the result of decades of transport planning that treated pedestrians as a residual category — something to be accommodated in whatever space vehicles did not need.
+This is not an accident. It is the result of decades of transport planning that treated pedestrians as a residual category  something to be accommodated in whatever space vehicles did not need.
 
 ## The Pedestrian Crisis
 
-In Indian cities, the pedestrian modal share is typically 30–40% of all trips — far higher than private vehicle trips in most cities. Yet the allocation of road space inverts this: vehicles command 80–90% of carriageway width, while pedestrian space is an afterthought.
+In Indian cities, the pedestrian modal share is typically 30–40% of all trips  far higher than private vehicle trips in most cities. Yet the allocation of road space inverts this: vehicles command 80–90% of carriageway width, while pedestrian space is an afterthought.
 
 The consequences are deadly. India accounts for a disproportionate share of road pedestrian fatalities. In cities like Vijayawada and Hyderabad, pedestrian fatalities constitute 40–50% of all road accident deaths.
 
 ## Complete Streets: A Framework
 
-The Complete Streets approach, now adopted in many Indian Smart Cities, provides a design framework for streets that serve all users — pedestrians, cyclists, public transit users, and vehicles — equitably.
+The Complete Streets approach, now adopted in many Indian Smart Cities, provides a design framework for streets that serve all users  pedestrians, cyclists, public transit users, and vehicles  equitably.
 
 Key principles:
 - Minimum 2.5m continuous footpaths on all arterial streets
@@ -86,13 +86,13 @@ Chennai's Street Design Guidelines (2017) and Pune's Complete Streets Policy off
     excerpt:
       "Most Indian ULBs lack the spatial data infrastructure needed for evidence-based planning. This essay examines what a minimal viable spatial data stack looks like for a mid-size Indian city and how to build it.",
     content: `
-Evidence-based urban planning requires spatial data — property boundaries, land use, infrastructure networks, demographic distributions, hazard zones. In most Indian cities, this data either does not exist in digital form, exists in silos across different departments, or is available but inaccessible due to institutional barriers.
+Evidence-based urban planning requires spatial data  property boundaries, land use, infrastructure networks, demographic distributions, hazard zones. In most Indian cities, this data either does not exist in digital form, exists in silos across different departments, or is available but inaccessible due to institutional barriers.
 
 ## The Data Gap
 
 India's urban data landscape is fragmented. The Census produces ward-level demographic data decennially. The Survey of India produces topographic maps at controlled scales. State government revenue departments hold property records (Record of Rights, Pahani) that are digitized only partially. Municipal corporations have property tax databases that rarely interoperate with physical survey data.
 
-The result is that most Indian ULBs make planning decisions — zoning, infrastructure investment, development permissions — without access to integrated spatial datasets.
+The result is that most Indian ULBs make planning decisions  zoning, infrastructure investment, development permissions  without access to integrated spatial datasets.
 
 ## A Minimal Viable Spatial Stack
 
@@ -125,7 +125,7 @@ The National Urban Digital Mission (NUDM) and Smart Cities Mission have both rec
 3. Interoperability standards for data exchange between departments
 4. Open data policies to share non-sensitive spatial data with researchers and the public
 
-Several cities — Pune, Surat, Ahmedabad — offer models of sustained municipal GIS capacity worth studying.
+Several cities  Pune, Surat, Ahmedabad  offer models of sustained municipal GIS capacity worth studying.
     `,
   },
   {
@@ -139,23 +139,23 @@ Several cities — Pune, Surat, Ahmedabad — offer models of sustained municipa
     excerpt:
       "India's tier-2 and tier-3 cities face a mobility inflection point: they are large enough to suffer serious congestion but not yet committed to the auto-centric infrastructure patterns that have locked larger metros into car dependence. This window must be used wisely.",
     content: `
-India's urban mobility crisis is well-documented in its large metropolitan cities — Mumbai's overcrowded suburban rail, Delhi's congested roads despite massive metro investment, Bengaluru's legendary traffic. But the more consequential mobility decisions are happening now in tier-2 and tier-3 cities that are growing rapidly and making infrastructure choices that will shape their transport systems for decades.
+India's urban mobility crisis is well-documented in its large metropolitan cities  Mumbai's overcrowded suburban rail, Delhi's congested roads despite massive metro investment, Bengaluru's legendary traffic. But the more consequential mobility decisions are happening now in tier-2 and tier-3 cities that are growing rapidly and making infrastructure choices that will shape their transport systems for decades.
 
 ## The Mobility Inflection Point
 
-Cities like Vijayawada, Coimbatore, Indore, and Nashik are crossing the 1–2 million population threshold — the point at which urban transport systems begin to face serious stress. Private vehicle ownership is growing rapidly. Trip lengths are increasing as cities sprawl outward. Road capacity is the standard planning response.
+Cities like Vijayawada, Coimbatore, Indore, and Nashik are crossing the 1–2 million population threshold  the point at which urban transport systems begin to face serious stress. Private vehicle ownership is growing rapidly. Trip lengths are increasing as cities sprawl outward. Road capacity is the standard planning response.
 
-But road capacity expansion in dense Indian cities almost always induces demand rather than relieving congestion — a well-established phenomenon in transport planning. Building more roads will not solve mobility problems in tier-2 Indian cities.
+But road capacity expansion in dense Indian cities almost always induces demand rather than relieving congestion  a well-established phenomenon in transport planning. Building more roads will not solve mobility problems in tier-2 Indian cities.
 
 ## The Transit Opportunity
 
-Tier-2 Indian cities still retain relatively compact urban forms, walkable neighborhood-scale street grids, and high pedestrian and cyclist modal shares. These characteristics create the foundation for transit-oriented mobility — if investments are made now, before sprawl and vehicle dependence become entrenched.
+Tier-2 Indian cities still retain relatively compact urban forms, walkable neighborhood-scale street grids, and high pedestrian and cyclist modal shares. These characteristics create the foundation for transit-oriented mobility  if investments are made now, before sprawl and vehicle dependence become entrenched.
 
 The key interventions:
 
 **Bus Rapid Transit (BRT):** Properly designed BRT (segregated lanes, off-board ticketing, bus stations) can deliver metro-quality service at a fraction of the cost. Ahmedabad's Janmarg remains the best Indian example.
 
-**Intermediate Public Transport (IPT):** Autorickshaws and share autos serve critical last-mile roles in Indian cities. Integrating IPT into formal transit systems — through app-based aggregation and coordinated routing — can dramatically extend the reach of formal transit.
+**Intermediate Public Transport (IPT):** Autorickshaws and share autos serve critical last-mile roles in Indian cities. Integrating IPT into formal transit systems  through app-based aggregation and coordinated routing  can dramatically extend the reach of formal transit.
 
 **Non-Motorized Transport (NMT):** Cycling infrastructure investment in tier-2 cities can retain current cyclist modal share while improving safety. Pune's cycling lanes offer lessons in both design and political economy.
 
@@ -221,13 +221,13 @@ There are:
 - Policy considerations
 - Financial constraints
 
-CUMTA sits at the intersection of all these layers. It doesn’t just evaluate projects based on feasibility, but also on alignment—whether they contribute to broader mobility goals defined in the CMP. This makes the process slower, but also more comprehensive.
+CUMTA sits at the intersection of all these layers. It doesn’t just evaluate projects based on feasibility, but also on alignmentwhether they contribute to broader mobility goals defined in the CMP. This makes the process slower, but also more comprehensive.
 
 ## The role of data becomes very real
 
 One thing that stood out during this experience was how important data becomes when multiple stakeholders are involved. When opinions differ, data becomes the common ground.
 
-Large-scale surveys, travel data, and spatial analysis are not just technical exercises—they are tools that help:
+Large-scale surveys, travel data, and spatial analysis are not just technical exercisesthey are tools that help:
 - Support or challenge proposals
 - Identify actual demand patterns
 - Build consensus among agencies
@@ -242,7 +242,7 @@ The responsibility for implementation continues to rest with individual departme
 
 ## Why this experience matters
 
-What this experience changed for me is how I understand urban mobility. Earlier, I used to think of mobility mainly in terms of infrastructure—roads, transit systems, and networks. But working within this system made me realize that:
+What this experience changed for me is how I understand urban mobility. Earlier, I used to think of mobility mainly in terms of infrastructureroads, transit systems, and networks. But working within this system made me realize that:
 - Even the best infrastructure plans can fail without institutional alignment.
 - Mobility is not just about designing systems; it is about managing relationships between institutions.
 
@@ -250,7 +250,7 @@ What this experience changed for me is how I understand urban mobility. Earlier,
 
 While this experience is from Chennai, the challenges are not unique. Most Indian cities face similar issues: multiple agencies, fragmented responsibilities, weak coordination.
 
-CUMTA provides a model—not perfect, but evolving—that shows how cities can start addressing this. The key takeaway is not just to create more plans, but to create systems that ensure those plans work together.
+CUMTA provides a modelnot perfect, but evolvingthat shows how cities can start addressing this. The key takeaway is not just to create more plans, but to create systems that ensure those plans work together.
 
 ## My takeaway
 
