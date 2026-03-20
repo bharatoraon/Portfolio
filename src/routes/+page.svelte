@@ -81,7 +81,7 @@
         </p>
         <div class="flex flex-wrap gap-4">
           <a href="/projects" class="btn-primary">View Projects</a>
-          <a href="/resume" class="btn-outline">Download CV</a>
+          <a href="/CV.pdf" download class="btn-outline">Download CV</a>
         </div>
 
 
