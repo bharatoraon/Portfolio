@@ -3,6 +3,9 @@
   import { research } from '$lib/data/research.js';
   import SEO from '$lib/components/SEO.svelte';
 
+  const published = research.filter(a => a.externalUrl);
+  const essays = research.filter(a => !a.externalUrl);
+
   const breadcrumbsJsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -13,9 +16,9 @@
   };
 </script>
 
-<SEO 
-  title="Research — Bharat Oraon"
-  description="Academic research, policy essays, and urban planning highlights by Bharat Oraon."
+<SEO
+  title="Research & Writing — Bharat Oraon"
+  description="Published articles, policy essays, and urban planning research by Bharat Oraon."
   jsonLd={breadcrumbsJsonLd}
 />
 
@@ -25,16 +28,28 @@
     <p class="text-xs uppercase tracking-widest text-ink-muted font-semibold mb-4">Writing</p>
     <h1 class="text-3xl md:text-4xl font-bold text-ink mb-4 tracking-tight">Research & Writing</h1>
     <p class="text-base text-ink-muted max-w-xl leading-relaxed">
-      Policy essays, planning research, and urban systems analysis.
+      Published articles, policy essays, and urban planning research.
     </p>
   </div>
 </section>
 
-<!-- Research List -->
-<section class="section-padding">
+<!-- Published Writing -->
+<section class="pt-4 pb-0 border-b border-border">
   <div class="container-narrow">
     <div>
-      {#each research as article}
+      {#each published as article}
+        <ResearchCard {article} />
+      {/each}
+    </div>
+  </div>
+</section>
+
+<!-- Essays & Research -->
+<section class="section-padding">
+  <div class="container-narrow">
+    <p class="text-xs uppercase tracking-widest text-ink-muted font-semibold mb-8">Essays & Research</p>
+    <div>
+      {#each essays as article}
         <ResearchCard {article} />
       {/each}
     </div>

@@ -9,9 +9,17 @@
     "Hyderabad, Telangana": { lat: 17.385, lng: 78.4867 },
     "Vijayawada, Andhra Pradesh": { lat: 16.5062, lng: 80.648 },
     "Vijayawada Region, AP": { lat: 16.5062, lng: 80.648 },
+    "Chennai, Tamil Nadu": { lat: 13.0827, lng: 80.2707 },
+    "Karur, Tamil Nadu": { lat: 10.9416, lng: 78.0188 },
+    "Italy": { lat: 41.8719, lng: 12.5674 },
+    "India": { lat: 20.5937, lng: 78.9629 },
   };
 
-  let coords = $derived(project ? (cityCoords[project.city] || { lat: 17.0, lng: 79.0 }) : { lat: 17.0, lng: 79.0 });
+  let coords = $derived(project
+    ? (project.mapCenter ?? cityCoords[project.city] ?? { lat: 17.0, lng: 79.0 })
+    : { lat: 17.0, lng: 79.0 });
+
+  let activeMapIndex = $state(0);
 
   const sections = [
     { key: 'context', label: 'Context' },
@@ -21,6 +29,7 @@
     { key: 'insights', label: 'Insights' },
     { key: 'outcome', label: 'Outcome' },
   ];
+
   let breadcrumbsJsonLd = $derived(project ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -33,7 +42,7 @@
 </script>
 
 {#if project}
-<SEO 
+<SEO
   title="{project.title} — Bharat Oraon"
   description={project.shortDescription}
   jsonLd={breadcrumbsJsonLd}
@@ -74,13 +83,68 @@
         <span class="text-xs text-ink-muted bg-paper-mid px-2 py-0.5 font-mono">{tag}</span>
       {/each}
     </div>
+
+    <!-- Live link -->
+    {#if project.liveUrl}
+      <div class="mt-6">
+        <a
+          href={project.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-sm font-medium bg-ink text-white px-4 py-2 hover:bg-ink-muted transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+          Visit Live Site
+        </a>
+      </div>
+    {/if}
   </div>
 </section>
 
-<!-- Interactive Map -->
+<!-- Map Section: project output maps or fallback city locator -->
 <section class="py-8 border-b border-border">
   <div class="container-narrow">
-    <MapViewer lat={coords.lat} lng={coords.lng} zoom={12} height="380px" title="Location: {project.city}" />
+    {#if project.mapEmbeds && project.mapEmbeds.length > 0}
+      <!-- Tab bar (only if multiple maps) -->
+      {#if project.mapEmbeds.length > 1}
+        <div class="flex items-center gap-1 mb-3 flex-wrap">
+          {#each project.mapEmbeds as embed, i}
+            <button
+              class="text-xs px-3 py-1.5 border transition-colors {activeMapIndex === i ? 'bg-ink text-white border-ink' : 'bg-white text-ink-muted border-border hover:border-ink-muted'}"
+              onclick={() => activeMapIndex = i}
+            >{embed.label}</button>
+          {/each}
+        </div>
+      {:else}
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-3.5 h-3.5 text-ink-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          <span class="text-xs text-ink-muted font-medium uppercase tracking-widest">{project.mapEmbeds[0].label}</span>
+        </div>
+      {/if}
+
+      <!-- iframe for the active map -->
+      {#each project.mapEmbeds as embed, i}
+        <div class="{activeMapIndex === i ? 'block' : 'hidden'}">
+          <iframe
+            src={embed.file}
+            title={embed.label}
+            class="w-full border border-border"
+            style="height: 520px;"
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+          ></iframe>
+        </div>
+      {/each}
+
+      <p class="text-xs text-ink-muted mt-2">Interactive map — scroll and click to explore.</p>
+    {:else}
+      <!-- Fallback: city location viewer -->
+      <MapViewer lat={coords.lat} lng={coords.lng} zoom={coords.zoom ?? 12} height="380px" title="Location: {project.city}" />
+    {/if}
   </div>
 </section>
 

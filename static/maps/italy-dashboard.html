@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italy Data Explorer | Enterprise Edition</title>
+    <link rel="icon" type="image/x-icon" href="images/italy.png">
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Real Data Loader (Bypasses CORS for local files) -->
+    <script src="population_data.js"></script>
+    <script src="spatial_datasets.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        #root {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+        }
+
+        .map-container {
+            flex-grow: 1;
+            height: 100%;
+            z-index: 1;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 420px;
+            background: white;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            height: 100vh;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%);
+            position: absolute;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Loader */
+        .loader {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Leaflet Overrides */
+        .leaflet-container {
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .leaflet-interactive {
+            transition: all 0.2s ease;
+        }
+
+        .leaflet-interactive:hover {
+            fill-opacity: 0.8 !important;
+            stroke-width: 3px !important;
+        }
+
+        /* Legend Control */
+        .info.legend {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            font-size: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            line-height: 1.5;
+            color: #475569;
+            backdrop-filter: blur(4px);
+            border: 1px solid #e2e8f0;
+        }
+
+        .info.legend i {
+            width: 16px;
+            height: 16px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.9;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- ICONS ---
+        const IconBase = ({ children, size = 20, className = "", ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                {children}
+            </svg>
+        );
+
+        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></IconBase>;
+        const ChevronLeft = (props) => <IconBase {...props}><polyline points="15 18 9 12 15 6"></polyline></IconBase>;
+        const Layers = (props) => <IconBase {...props}><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></IconBase>;
+        const Database = (props) => <IconBase {...props}><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></IconBase>;
+        const ExternalLink = (props) => <IconBase {...props}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></IconBase>;
+        const ArrowLeft = (props) => <IconBase {...props}><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></IconBase>;
+        const Truck = (props) => <IconBase {...props}><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></IconBase>;
+        const Building = (props) => <IconBase {...props}><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line></IconBase>;
+
+        // --- CONSTANTS ---
+        const DATA_URLS = {
+            regions: "https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_IT_regions.geojson",
+            provinces: "https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_IT_provinces.geojson",
+            getMunicipalities: (provCode) => `https://raw.githubusercontent.com/openpolis/geojson-italy/master/geojson/limits_P_${provCode}_municipalities.geojson`,
+            asc: "data/istat/processed/asc_level1.geojson"
+        };
+
+        const RNDT_API_BASE = "https://geodati.gov.it/RNDT/rest/find/document";
+
+        // --- COLOR SCALES ---
+        function getColor(d) {
+            return d > 50000 ? '#7f1d1d' : d > 20000 ? '#991b1b' : d > 10000 ? '#b91c1c' : d > 5000 ? '#dc2626' : d > 2000 ? '#ea580c' : d > 1000 ? '#f97316' : d > 500 ? '#fbbf24' : '#fde047';
+        }
+
+        // --- COMPONENTS ---
+
+        function App() {
+            const [viewMode, setViewMode] = useState('map'); // 'map', 'library', 'transport', 'rndt'
+            const [currentLevel, setCurrentLevel] = useState('region'); // region, province, municipality, quartiere
+            const [selectedRegion, setSelectedRegion] = useState(null);
+            const [selectedProvince, setSelectedProvince] = useState(null);
+            const [selectedMunicipality, setSelectedMunicipality] = useState(null);
+
+            const [sidebarOpen, setSidebarOpen] = useState(true);
+            const [dataVisEnabled, setDataVisEnabled] = useState(false);
+            const [demographicData, setDemographicData] = useState({});
+
+            // ASC Data Index
+            const [ascIndex, setAscIndex] = useState(null); // Map<PRO_COM, Feature[]>
+            const [ascLoading, setAscLoading] = useState(true);
+
+            // Generic Data State
+            const [activeDataset, setActiveDataset] = useState(null);
+            const [availableDatasets, setAvailableDatasets] = useState([]);
+
+            // Transport State
+            const [transportLayers, setTransportLayers] = useState({
+                motorways: { enabled: false, loaded: false },
+                primaryRoads: { enabled: false, loaded: false },
+                railways: { enabled: false, loaded: false }
+            });
+
+            useEffect(() => {
+                if (window.POPULATION_DATA) setActiveDataset({ id: '22_289', name: 'Resident Population', data: window.POPULATION_DATA });
+                if (window.AVAILABLE_DATASETS) setAvailableDatasets(window.AVAILABLE_DATASETS);
+
+                // Load and Index ASC Data
+                fetch(DATA_URLS.asc)
+                    .then(r => r.json())
+                    .then(data => {
+                        const index = {};
+                        data.features.forEach(f => {
+                            // Force string for robust matching
+                            const proCom = String(f.properties.PRO_COM);
+                            if (!index[proCom]) index[proCom] = [];
+                            index[proCom].push(f);
+                        });
+                        setAscIndex(index);
+                        setAscLoading(false);
+                        console.log(` Indexed ASC data for ${Object.keys(index).length} municipalities.`);
+                    })
+                    .catch(e => {
+                        console.error(" Failed to load ASC data:", e);
+                        setAscLoading(false);
+                    });
+            }, []);
+
+            const handleMunicipalitySelect = (feature) => {
+                // Try multiple property names and force string
+                const rawCode = feature.properties.com_istat_code_num || feature.properties.pro_com || feature.properties.PRO_COM;
+                const proCom = String(rawCode);
+
+                console.log(`Selecting Municipality: ${feature.properties.name} (Code: ${proCom})`);
+
+                // Check if we have ASC data for this municipality
+                if (ascIndex && ascIndex[proCom]) {
+                    console.log(`Found ${ascIndex[proCom].length} ASC features.`);
+                    setSelectedMunicipality(feature);
+                    setCurrentLevel('quartiere');
+                } else {
+                    console.warn(`No ASC data found for code ${proCom}`);
+                    // Fallback: Just select it visually
+                    // We could show a toast here in a real app
+                }
+            };
+
+            return (
+                <div className="flex w-full h-full font-sans text-slate-800">
+                    {/* SIDEBAR */}
+                    <div className={`sidebar ${sidebarOpen ? '' : 'closed'} flex flex-col border-r border-slate-200`}>
+                        <div className="p-5 bg-slate-900 text-white shadow-md flex items-center justify-between">
+                            <div>
+                                <h1 className="text-lg font-bold flex items-center gap-2 tracking-tight">
+                                    <img src="images/italy.png" alt="Italy" className="w-6 h-6 object-contain" />
+                                    Italy Data Explorer
+                                </h1>
+                                <p className="text-[10px] text-slate-400 mt-0.5 uppercase tracking-wider font-semibold">Enterprise Edition</p>
+                            </div>
+                        </div>
+
+                        {/* Navigation Tabs */}
+                        <div className="flex border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+                            {[
+                                { id: 'map', icon: <Layers size={16} />, label: 'Explorer' },
+                                { id: 'library', icon: <Database size={16} />, label: 'Data' },
+                                { id: 'transport', icon: <Truck size={16} />, label: 'Transport' },
+                                { id: 'rndt', icon: <Search size={16} />, label: 'RNDT' },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setViewMode(tab.id)}
+                                    className={`flex-1 min-w-[70px] py-3 text-xs font-medium flex flex-col items-center justify-center gap-1 transition-all border-b-2 ${viewMode === tab.id ? 'text-blue-600 border-blue-600 bg-blue-50/50' : 'text-slate-500 border-transparent hover:bg-slate-50 hover:text-slate-700'}`}
+                                >
+                                    {tab.icon}
+                                    <span>{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="flex-1 overflow-y-auto bg-slate-50 relative">
+                            {viewMode === 'map' && (
+                                <MapControlPanel
+                                    currentLevel={currentLevel}
+                                    selectedRegion={selectedRegion}
+                                    selectedProvince={selectedProvince}
+                                    selectedMunicipality={selectedMunicipality}
+                                    dataVisEnabled={dataVisEnabled}
+                                    activeDataset={activeDataset}
+                                    ascLoading={ascLoading}
+                                    ascAvailable={(() => {
+                                        if (!ascIndex || !selectedMunicipality) return false;
+                                        const raw = selectedMunicipality.properties.com_istat_code_num || selectedMunicipality.properties.pro_com || selectedMunicipality.properties.PRO_COM;
+                                        return !!ascIndex[String(raw)];
+                                    })()}
+                                    toggleDataVis={() => setDataVisEnabled(!dataVisEnabled)}
+                                    onReset={() => {
+                                        setCurrentLevel('region');
+                                        setSelectedRegion(null);
+                                        setSelectedProvince(null);
+                                        setSelectedMunicipality(null);
+                                        setDataVisEnabled(false);
+                                    }}
+                                    onBack={() => {
+                                        if (currentLevel === 'quartiere') {
+                                            setCurrentLevel('municipality');
+                                            setSelectedMunicipality(null);
+                                        } else if (currentLevel === 'municipality') {
+                                            setCurrentLevel('province');
+                                            setSelectedProvince(null);
+                                        } else if (currentLevel === 'province') {
+                                            setCurrentLevel('region');
+                                            setSelectedRegion(null);
+                                        }
+                                    }}
+                                />
+                            )}
+                            {viewMode === 'library' && (
+                                <DatasetLibrary
+                                    datasets={availableDatasets}
+                                    activeDataset={activeDataset}
+                                    onSelect={(ds) => alert("Dataset loading logic preserved.")}
+                                />
+                            )}
+                            {viewMode === 'transport' && (
+                                <TransportationPanel
+                                    layers={transportLayers}
+                                    onToggleLayer={(key) => setTransportLayers(prev => ({ ...prev, [key]: { ...prev[key], enabled: !prev[key].enabled } }))}
+                                />
+                            )}
+                            {viewMode === 'rndt' && <RNDTSearchPanel />}
+                        </div>
+                    </div>
+
+                    {/* MAIN MAP AREA */}
+                    <div className="map-container">
+                        <button
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            className="absolute top-4 left-4 z-[1000] bg-white p-2.5 rounded-lg shadow-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-transform active:scale-95"
+                        >
+                            {sidebarOpen ? <ChevronLeft size={20} /> : <Search size={20} />}
+                        </button>
+
+                        <LeafletMap
+                            viewMode={viewMode}
+                            level={currentLevel}
+                            selectedRegion={selectedRegion}
+                            selectedProvince={selectedProvince}
+                            selectedMunicipality={selectedMunicipality}
+                            ascIndex={ascIndex}
+                            dataVisEnabled={dataVisEnabled}
+                            activeDataset={activeDataset}
+                            transportLayers={transportLayers}
+                            onDataGenerated={setDemographicData}
+                            onSelectRegion={(reg) => { setSelectedRegion(reg); setCurrentLevel('province'); }}
+                            onSelectProvince={(prov) => { setSelectedProvince(prov); setCurrentLevel('municipality'); }}
+                            onSelectMunicipality={handleMunicipalitySelect}
+                            onTransportLayerLoaded={(key) => setTransportLayers(prev => ({ ...prev, [key]: { ...prev[key], loaded: true } }))}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        // --- MAP CONTROLS ---
+        function MapControlPanel({ currentLevel, selectedRegion, selectedProvince, selectedMunicipality, onReset, onBack, dataVisEnabled, toggleDataVis, activeDataset, ascAvailable, ascLoading }) {
+            return (
+                <div className="p-6 space-y-6">
+                    <div>
+                        <h2 className="text-lg font-bold text-slate-800 mb-2">Administrative Boundaries</h2>
+                        <p className="text-sm text-slate-600">
+                            Navigate through Italy's administrative levels.
+                        </p>
+                        {ascLoading && (
+                            <div className="mt-2 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 p-2 rounded border border-blue-100">
+                                <div className="loader w-3 h-3 border-2"></div>
+                                Loading Quartieri data...
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-3">
+                        {/* Breadcrumbs */}
+                        <div className={`p-4 rounded-lg border transition-all ${currentLevel === 'region' ? 'bg-white border-blue-500 shadow-sm ring-1 ring-blue-100' : 'bg-slate-100 border-transparent opacity-70'}`}>
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Level 1</div>
+                            <div className="font-semibold text-slate-800 flex justify-between">
+                                <span>Regions</span>
+                                {selectedRegion && <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-mono">{selectedRegion.properties.reg_istat_code_num}</span>}
+                            </div>
+                        </div>
+
+                        <div className={`p-4 rounded-lg border transition-all ${currentLevel === 'province' ? 'bg-white border-blue-500 shadow-sm ring-1 ring-blue-100' : 'bg-slate-100 border-transparent opacity-70'}`}>
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Level 2</div>
+                            <div className="font-semibold text-slate-800 flex justify-between">
+                                <span>Provinces</span>
+                                {selectedProvince && <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-mono">{selectedProvince.properties.prov_istat_code_num}</span>}
+                            </div>
+                        </div>
+
+                        <div className={`p-4 rounded-lg border transition-all ${currentLevel === 'municipality' ? 'bg-white border-blue-500 shadow-sm ring-1 ring-blue-100' : 'bg-slate-100 border-transparent opacity-70'}`}>
+                            <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Level 3</div>
+                            <div className="font-semibold text-slate-800 flex justify-between">
+                                <span>Municipalities</span>
+                                {selectedMunicipality && <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded font-mono">{selectedMunicipality.properties.com_istat_code_num || selectedMunicipality.properties.pro_com}</span>}
+                            </div>
+                        </div>
+
+                        {currentLevel === 'quartiere' && (
+                            <div className="p-4 rounded-lg border bg-white border-purple-500 shadow-sm ring-1 ring-purple-100">
+                                <div className="text-[10px] uppercase font-bold tracking-wider text-purple-400 mb-1">Level 4</div>
+                                <div className="font-semibold text-purple-800">Quartieri / ASC</div>
+                                <div className="text-xs text-slate-500 mt-1">Sub-municipal areas loaded.</div>
+                            </div>
+                        )}
+
+                        {currentLevel !== 'region' && (
+                            <div className="flex gap-2">
+                                <button onClick={onBack} className="flex-1 py-2.5 px-4 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 flex items-center justify-center gap-2 text-sm font-medium transition-colors shadow-sm">
+                                    <ArrowLeft size={16} /> Back
+                                </button>
+                                <button onClick={onReset} className="px-4 bg-slate-100 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-200 text-sm font-medium">
+                                    Reset
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {currentLevel === 'municipality' && (
+                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="text-sm font-bold text-orange-900 flex items-center gap-2">
+                                    <Layers size={16} /> Demographics Layer
+                                </h3>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked={dataVisEnabled} onChange={toggleDataVis} className="sr-only peer" />
+                                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-600"></div>
+                                </label>
+                            </div>
+                            <p className="text-xs text-orange-800/80">Visualize population density on the map.</p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // --- TRANSPORTATION PANEL ---
+        function TransportationPanel({ layers, onToggleLayer }) {
+            const layerInfo = {
+                motorways: { name: 'Motorways', color: '#dc2626', file: 'italy_motorways.geojson' },
+                primaryRoads: { name: 'Primary Roads', color: '#f97316', file: 'italy_primary_roads.geojson' },
+                railways: { name: 'Railways', color: '#9333ea', file: 'italy_railways.geojson' }
+            };
+
+            return (
+                <div className="p-6">
+                    <div className="mb-6">
+                        <h2 className="text-lg font-bold text-slate-800 mb-2">Transportation</h2>
+                        <p className="text-sm text-slate-600">Visualize infrastructure networks.</p>
+                    </div>
+                    <div className="space-y-3">
+                        {Object.entries(layerInfo).map(([key, info]) => (
+                            <div key={key} className="p-4 bg-white border border-slate-200 rounded-lg hover:shadow-sm transition-all flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: info.color }}></div>
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-slate-800">{info.name}</h3>
+                                        <p className="text-[10px] text-slate-400 font-mono">{info.file}</p>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked={layers[key].enabled} onChange={() => onToggleLayer(key)} className="sr-only peer" />
+                                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- DATASET LIBRARY (Placeholder) ---
+        function DatasetLibrary({ datasets, activeDataset, onSelect }) {
+            return (
+                <div className="p-6">
+                    <h2 className="text-lg font-bold text-slate-800 mb-2">Dataset Library</h2>
+                    <p className="text-sm text-slate-600 mb-4">Browse {datasets.length} ISTAT datasets.</p>
+                    <div className="space-y-2">
+                        {datasets.slice(0, 10).map(ds => (
+                            <div key={ds.id} className="p-3 bg-white border border-slate-200 rounded hover:bg-slate-50 cursor-pointer" onClick={() => onSelect(ds)}>
+                                <div className="text-xs font-mono text-slate-400">{ds.id}</div>
+                                <div className="text-sm font-medium text-blue-700">{ds.name_en}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- RNDT SEARCH (Placeholder) ---
+        function RNDTSearchPanel() {
+            return <div className="p-6"><h2 className="text-lg font-bold text-slate-800">RNDT Search</h2><p className="text-sm text-slate-600">Search the national catalog.</p></div>;
+        }
+
+        // --- LEAFLET MAP WRAPPER ---
+        function LeafletMap({ viewMode, level, selectedRegion, selectedProvince, selectedMunicipality, ascIndex, dataVisEnabled, activeDataset, transportLayers, onSelectRegion, onSelectProvince, onSelectMunicipality, onTransportLayerLoaded, onDataGenerated }) {
+            const mapRef = useRef(null);
+            const mapInstanceRef = useRef(null);
+            const layerRef = useRef(null); // For Admin Boundaries
+            const transportLayerRefs = useRef({});
+
+            // Initialize Map
+            useEffect(() => {
+                if (!mapInstanceRef.current) {
+                    const map = L.map(mapRef.current, { zoomControl: false }).setView([41.8719, 12.5674], 6);
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap &copy; CARTO',
+                        subdomains: 'abcd',
+                        maxZoom: 19
+                    }).addTo(map);
+                    L.control.zoom({ position: 'topright' }).addTo(map);
+                    mapInstanceRef.current = map;
+                }
+            }, []);
+
+            // Handle Admin Boundaries & ASC
+            useEffect(() => {
+                const map = mapInstanceRef.current;
+                if (!map || viewMode !== 'map') {
+                    if (layerRef.current) { map.removeLayer(layerRef.current); layerRef.current = null; }
+                    return;
+                }
+
+                const loadAdminData = async () => {
+                    let url = '';
+                    let style = {};
+                    let onFeatureClick = () => { };
+                    let geoData = null;
+
+                    if (level === 'region') {
+                        url = DATA_URLS.regions;
+                        style = { color: '#3b82f6', weight: 1, fillOpacity: 0.1, fillColor: '#3b82f6' };
+                        onFeatureClick = onSelectRegion;
+                    } else if (level === 'province' && selectedRegion) {
+                        url = DATA_URLS.provinces;
+                        style = { color: '#10b981', weight: 1, fillOpacity: 0.1, fillColor: '#10b981' };
+                        onFeatureClick = onSelectProvince;
+                    } else if (level === 'municipality' && selectedProvince) {
+                        url = DATA_URLS.getMunicipalities(selectedProvince.properties.prov_istat_code_num);
+                        style = { color: '#f59e0b', weight: 1, fillOpacity: 0.2, fillColor: '#f59e0b' };
+                        onFeatureClick = onSelectMunicipality;
+                    } else if (level === 'quartiere' && selectedMunicipality && ascIndex) {
+                        // Load ASC Data from Index
+                        const proCom = selectedMunicipality.properties.com_istat_code_num || selectedMunicipality.properties.pro_com;
+                        const features = ascIndex[proCom];
+                        if (features) {
+                            geoData = { type: "FeatureCollection", features: features };
+                            style = { color: '#9333ea', weight: 1, fillOpacity: 0.4, fillColor: '#a855f7' };
+                        }
+                    }
+
+                    if (!url && !geoData) return;
+
+                    try {
+                        if (!geoData) {
+                            const res = await fetch(url);
+                            const data = await res.json();
+                            geoData = data;
+
+                            // Filter provinces by region
+                            if (level === 'province' && selectedRegion) {
+                                geoData = { ...data, features: data.features.filter(f => f.properties.reg_istat_code_num === selectedRegion.properties.reg_istat_code_num) };
+                            }
+                        }
+
+                        if (layerRef.current) map.removeLayer(layerRef.current);
+
+                        const layer = L.geoJSON(geoData, {
+                            style: style,
+                            onEachFeature: (feature, layer) => {
+                                let tooltipContent = feature.properties.name || feature.properties.prov_name || feature.properties.reg_name || feature.properties.DEN_ASC1;
+
+                                if (level === 'quartiere') {
+                                    const props = feature.properties;
+                                    const popupContent = `
+                                        <div class="font-sans p-1">
+                                            <h3 class="font-bold text-sm text-purple-900 border-b pb-1 mb-1">${props.DEN_ASC1}</h3>
+                                            <div class="text-xs text-slate-600 space-y-1">
+                                                <div class="flex justify-between gap-4"><span>Code:</span> <span class="font-mono">${props.COD_ASC1}</span></div>
+                                                <div class="flex justify-between gap-4"><span>Population (2021):</span> <span class="font-bold text-slate-800">${props.POP21 ? props.POP21.toLocaleString() : 'N/A'}</span></div>
+                                            </div>
+                                        </div>
+                                    `;
+                                    layer.bindPopup(popupContent);
+                                    layer.on('mouseover', (e) => { e.target.setStyle({ weight: 3, fillOpacity: 0.7, color: '#6b21a8' }); e.target.bringToFront(); });
+                                } else {
+                                    layer.on('click', (e) => { L.DomEvent.stopPropagation(e); onFeatureClick(feature); });
+                                    layer.on('mouseover', (e) => { e.target.setStyle({ weight: 3, fillOpacity: 0.4 }); e.target.bringToFront(); });
+                                }
+
+                                layer.bindTooltip(tooltipContent, { sticky: true, className: 'font-sans text-xs font-bold' });
+                                layer.on('mouseout', (e) => { layer.resetStyle(e.target); });
+                            }
+                        }).addTo(map);
+
+                        layerRef.current = layer;
+                        if (layer.getBounds().isValid()) map.fitBounds(layer.getBounds(), { padding: [50, 50] });
+
+                    } catch (e) { console.error("Admin Data Error", e); }
+                };
+
+                loadAdminData();
+            }, [viewMode, level, selectedRegion, selectedProvince, selectedMunicipality, ascIndex]);
+
+            // Handle Transportation (Simplified)
+            useEffect(() => {
+                const map = mapInstanceRef.current;
+                if (!map) return;
+
+                Object.entries(transportLayers).forEach(([key, state]) => {
+                    if (state.enabled && !transportLayerRefs.current[key]) {
+                        const file = `osm_transportation_optimized/italy_${key === 'motorways' ? 'motorways' : key === 'primaryRoads' ? 'primary_roads' : 'railways'}.geojson`;
+                        const color = key === 'motorways' ? '#dc2626' : key === 'primaryRoads' ? '#f97316' : '#9333ea';
+
+                        fetch(file).then(r => r.json()).then(data => {
+                            const layer = L.geoJSON(data, {
+                                style: { color, weight: 2, opacity: 0.7 },
+                                onEachFeature: (f, l) => l.bindTooltip(f.properties.name || 'Road', { sticky: true })
+                            }).addTo(map);
+                            transportLayerRefs.current[key] = layer;
+                            onTransportLayerLoaded(key);
+                        }).catch(e => console.error(e));
+                    } else if (!state.enabled && transportLayerRefs.current[key]) {
+                        map.removeLayer(transportLayerRefs.current[key]);
+                        delete transportLayerRefs.current[key];
+                    }
+                });
+            }, [transportLayers]);
+
+            return <div ref={mapRef} className="w-full h-full bg-slate-100" />;
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
