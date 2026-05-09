@@ -18,7 +18,7 @@
     "url": "https://bharatoraon.com/contact",
     "contactPoint": {
       "@type": "ContactPoint",
-      "email": "work@bharatoraon.com",
+      "email": "mail@bharatoraon.com",
       "contactType": "professional",
       "availableLanguage": "English"
     },
@@ -62,8 +62,8 @@
             </div>
             <div>
               <p class="text-xs uppercase tracking-widest text-ink-muted font-medium mb-1">Email</p>
-              <a href="mailto:work@bharatoraon.com" class="text-sm text-ink hover:text-accent transition-colors">
-                work@bharatoraon.com
+              <a href="mailto:mail@bharatoraon.com" class="text-sm text-ink hover:text-accent transition-colors">
+                mail@bharatoraon.com
               </a>
             </div>
           </div>
