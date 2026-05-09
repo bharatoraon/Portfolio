@@ -183,7 +183,7 @@
             </svg>
             School of Planning & Architecture, Vijayawada
           </div>
-          <div class="flex items-center gap-2 text-xs text-ink-muted group/link">
+          <!-- <div class="flex items-center gap-2 text-xs text-ink-muted group/link">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.172 13.828a4 4 0 015.656 0l4-4a4 4 0 115.656 5.656l-1.101 1.101" />
@@ -191,7 +191,7 @@
             <a href="https://buildsoc.in/" target="_blank" rel="noopener" class="hover:text-ink transition-colors">
               Co-founder <span class="font-bold underline decoration-border group-hover/link:decoration-ink">BuildSoc</span>
             </a>
-          </div>
+          </div> -->
         </div>
       </div>
 
