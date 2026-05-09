@@ -18,7 +18,7 @@
       <div>
         <h4 class="text-xs uppercase tracking-widest text-ink-muted font-semibold mb-4">Connect</h4>
         <div class="flex flex-col gap-2">
-          <a href="mailto:work@bharatoraon.com" class="text-sm text-ink-muted hover:text-ink transition-colors flex items-center gap-2">
+          <a href="mailto:mail@bharatoraon.com" class="text-sm text-ink-muted hover:text-ink transition-colors flex items-center gap-2">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
