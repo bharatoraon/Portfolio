@@ -203,7 +203,7 @@
         
         <div class="space-y-6 text-sm text-ink-muted leading-relaxed max-w-2xl">
           <p>
-            I am a final-year Bachelor of Planning student at the School of Planning and Architecture, Vijayawada, with a focus on urban governance, spatial intelligence, and civic technology for Indian cities.
+            I am an Urban Planner graduated from School of Planning and Architecture, Vijayawada, with a focus on urban governance, spatial intelligence, and civic technology for Indian cities.
           </p>
           <p>
             My work sits at the intersection of urban planning research and geospatial technology — combining GIS analysis, remote sensing, and spatial data infrastructure with policy research on governance reform, mobility systems, and land use planning.
