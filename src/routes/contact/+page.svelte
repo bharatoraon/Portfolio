@@ -5,11 +5,40 @@
   let subject = '';
   let message = '';
   let submitted = false;
+  let sending = false;
+  let error = '';
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    // Basic form handling — connect to a form service like Formspree in production
-    submitted = true;
+    sending = true;
+    error = '';
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/mail@bharatoraon.com", {
+        method: "POST",
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message
+        })
+      });
+
+      if (response.ok) {
+        submitted = true;
+      } else {
+        const data = await response.json();
+        error = data.message || "Failed to send message. Please try again later.";
+      }
+    } catch (err) {
+      error = "A network error occurred. Please check your connection and try again.";
+    } finally {
+      sending = false;
+    }
   }
   const contactJsonLd = {
     "@context": "https://schema.org",
@@ -135,6 +164,13 @@
             <p class="text-xs text-ink-muted">Thank you for reaching out. I'll get back to you shortly.</p>
           </div>
         {:else}
+          {#if error}
+            <div class="p-4 mb-4 bg-red-50 border border-red-200 text-xs text-red-700">
+              <p class="font-semibold mb-1">Could not send message</p>
+              <p>{error}</p>
+            </div>
+          {/if}
+
           <form on:submit={handleSubmit} class="space-y-4">
             <div>
               <label for="name" class="block text-xs uppercase tracking-widest text-ink-muted font-medium mb-1.5">Name</label>
@@ -143,7 +179,8 @@
                 type="text"
                 bind:value={name}
                 required
-                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors"
+                disabled={sending}
+                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors disabled:opacity-50"
                 placeholder="Your name"
               />
             </div>
@@ -154,7 +191,8 @@
                 type="email"
                 bind:value={email}
                 required
-                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors"
+                disabled={sending}
+                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors disabled:opacity-50"
                 placeholder="your@email.com"
               />
             </div>
@@ -165,7 +203,8 @@
                 type="text"
                 bind:value={subject}
                 required
-                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors"
+                disabled={sending}
+                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors disabled:opacity-50"
                 placeholder="Research collaboration / GIS project / ..."
               />
             </div>
@@ -175,16 +214,21 @@
                 id="message"
                 bind:value={message}
                 required
+                disabled={sending}
                 rows="5"
-                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors resize-none"
+                class="w-full border border-border bg-white px-4 py-2.5 text-sm text-ink focus:outline-none focus:border-ink transition-colors resize-none disabled:opacity-50"
                 placeholder="Your message..."
               ></textarea>
             </div>
-            <button type="submit" class="btn-primary w-full justify-center">
-              Send Message
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+            <button type="submit" disabled={sending} class="btn-primary w-full justify-center disabled:opacity-50">
+              {#if sending}
+                Sending Message...
+              {:else}
+                Send Message
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              {/if}
             </button>
           </form>
         {/if}
