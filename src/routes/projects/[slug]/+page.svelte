@@ -105,7 +105,7 @@
 
 <!-- Map Section: project output maps or fallback city locator -->
 <section class="py-8 border-b border-border">
-  <div class="container-narrow">
+  <div class={project.mapEmbeds && project.mapEmbeds.length > 0 ? "max-w-[1400px] mx-auto px-4 md:px-8" : "container-narrow"}>
     {#if project.mapEmbeds && project.mapEmbeds.length > 0}
       <!-- Tab bar (only if multiple maps) -->
       {#if project.mapEmbeds.length > 1}
@@ -128,12 +128,12 @@
 
       <!-- iframe for the active map -->
       {#each project.mapEmbeds as embed, i}
-        <div class="{activeMapIndex === i ? 'block' : 'hidden'}">
+        <div class="{activeMapIndex === i ? 'block' : 'hidden'} border border-border rounded-lg overflow-hidden shadow-sm bg-white">
           <iframe
             src={embed.file}
             title={embed.label}
-            class="w-full border border-border"
-            style="height: 520px;"
+            class="w-full block"
+            style="height: 760px; border: none;"
             loading="lazy"
             sandbox="allow-scripts allow-same-origin allow-popups"
           ></iframe>

@@ -230,4 +230,62 @@ export const projects = [
     tags: ["GPS", "Transit", "Folium", "Python", "MTC", "Trajectory Analysis"],
     featured: false,
   },
+  {
+    slug: "bengaluru-contamination-risk-dashboard",
+    title: "Bengaluru Water Quality & Contamination Risk Dashboard",
+    city: "Bengaluru, Karnataka",
+    type: "GIS / Environmental Analysis",
+    year: "2026",
+    thumbnail: "/thumbnails/bengaluru-contamination.jpg",
+    liveUrl: "https://datajam-opencity.vercel.app/",
+    mapCenter: { lat: 12.9716, lng: 77.5946, zoom: 11 },
+    mapEmbeds: [
+      { label: "Contamination Risk Map", file: "/maps/water-quality-bengaluru/index.html" },
+    ],
+    shortDescription:
+      "A spatial data pipeline and dashboard scoring and mapping contamination risk across Bengaluru's water-supply and sewage infrastructure, combining citizen audits, lake water quality reports, and spatial proximity models.",
+    context:
+      "Bengaluru's rapid urbanization has strained its water-supply and sewage networks, resulting in frequent contamination of stormwater drains (SWDs) and lakes. Traditional monitoring is slow and lacks spatial resolution, making proactive risk mitigation difficult.",
+    problem:
+      "How can heterogeneous public datasets — including BWSSB sewer and water lines, citizen water audits, monthly lake reports, and natural terrain slopes — be integrated to identify sewage-drain intersections, quantify contamination risk, and visualize hotspots for environmental planning?",
+    methodology:
+      "Built a spatial data pipeline in Python using GeoPandas, reprojecting to UTM Zone 43N. Scored drain segments using a 0-100 composite risk index based on sewage line proximity, manhole density, citizen audit reports (black water, odor, foam), drain-edge typology (property-adjacent or lake-adjacent), and public-health exposure metrics (water supply proximity). Integrated monthly lake water quality PDF data and slope classes from KML files.",
+    analysis:
+      "Data engine developed in Python (Pandas, GeoPandas, NumPy, PyPDF2, PDFplumber). Pipeline exports clean GeoJSON layers to a standalone GIS dashboard. Frontend built with MapLibre GL, featuring layers for primary/secondary drains, valley systems, sub-basin boundaries, stream order, slope classes, lake/groundwater quality, and interactive contamination heatmaps.",
+    insights:
+      "Spatial analysis revealed high-risk clusters at property-adjacent drain segments where informal sewage connections are common. Natural drainage stream orders highlighted how contamination propagates down-valley into existing lakes, while slope class overlays demonstrated that low-lying areas suffer from chronic stagnation and higher risk.",
+    outcome:
+      "A reproducible spatial analysis pipeline and an interactive MapLibre GL dashboard showing ward-level risk, high-risk pipeline segments, lake water quality grades, and groundwater contamination samples, enabling citizens and environmental planners to locate infrastructure vulnerabilities.",
+    tags: ["Water Quality", "Data Pipeline", "GeoPandas", "MapLibre GL", "Bengaluru", "Python"],
+    featured: true,
+  },
+  {
+    slug: "chennai-multimodal-transit-connectivity",
+    title: "Chennai Multimodal Transit Connectivity Dashboard",
+    city: "Chennai, Tamil Nadu",
+    type: "GIS / Routing Analysis",
+    year: "2026",
+    thumbnail: "/thumbnails/chennai-connectivity.jpg",
+    liveUrl: "https://depot-analysis.vercel.app/",
+    mapCenter: { lat: 13.0827, lng: 80.22, zoom: 11 },
+    mapEmbeds: [
+      { label: "Transit Connectivity Map", file: "/maps/chennai-connectivity/index.html" },
+    ],
+    shortDescription:
+      "An interactive GIS dashboard mapping multimodal transit connectivity and identifying transit deserts in the Chennai Metropolitan Area using a custom Python RAPTOR routing engine.",
+    context:
+      "Chennai's public transit network comprises buses, metro rail, and suburban railways, but poor physical integration and lack of coordination can lead to transit deserts where commuters face multiple transfers to reach key terminals.",
+    problem:
+      "How can transit connectivity be evaluated across a massive metropolitan network? Specifically, how can we identify stops with low accessibility (transit deserts) and map spatial accessibility to major terminals in both Bus-Only and Multimodal routing configurations?",
+    methodology:
+      "Developed a Python ETL engine that implements a round-based public transit routing algorithm (RAPTOR). Footpath transfers between stops are indexed using a Shapely STRtree spatial query with a 200m walking limit. The pipeline calculates the geographic distance and name of the closest terminal for every stop, spatial-clips the network to the CMA boundary, and outputs enriched GeoJSON layers.",
+    analysis:
+      "ETL Engine built in Python using Shapely, GeoPandas, Fiona, and NumPy. Frontend built as a Leaflet-based single-page application with customized CSS variables, segmented routing mode controls, an active search/filter for underserved stops, and responsive, wrapped tooltip popups showing stop-level access metrics.",
+    insights:
+      "The analysis showed that incorporating rail transit (Multimodal mode) reduces the number of underserved stops in the CMA from 190 to 78. Major transit deserts were identified in peripheral suburban areas lacking rapid rail connections, showing where extension lines or feeder bus services are most critically needed.",
+    outcome:
+      "A deployed high-performance Leaflet dashboard showing CMA boundaries, bus routes/stops, rail lines, and terminals. Features include a toggleable Underserved Focus mode to isolate low-connectivity zones and interactive tooltips showing proximity to nearest terminals.",
+    tags: ["RAPTOR Algorithm", "Routing", "Leaflet", "GeoPandas", "Shapely", "Transit Connectivity", "Chennai"],
+    featured: true,
+  },
 ];
