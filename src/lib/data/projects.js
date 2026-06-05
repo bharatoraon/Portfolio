@@ -202,35 +202,6 @@ export const projects = [
     featured: false,
   },
   {
-    slug: "cumta-gps-trajectory-analysis-chennai",
-    title: "CUMTA GPS Trajectory Analysis — Chennai Transit",
-    city: "Chennai, Tamil Nadu",
-    type: "Transit / Data Analysis",
-    year: "2025",
-    thumbnail: "/thumbnails/cumta-routes.jpg",
-    mapCenter: { lat: 13.0827, lng: 80.2707, zoom: 11 },
-    mapEmbeds: [
-      { label: "GPS Route Map", file: "/maps/cumta-routes.html" },
-      { label: "Density Hexbin", file: "/maps/cumta-hexbin.html" },
-    ],
-    shortDescription:
-      "Analysis and visualization of GPS trajectory data from Chennai's public transit fleet, producing animated route maps, hexagonal density analysis, and fleet performance dashboards.",
-    context:
-      "GPS data from public transit vehicles contains rich operational intelligence — route adherence, coverage patterns, frequency distribution, and fleet utilization — that is rarely extracted and visualized in a usable form for planners.",
-    problem:
-      "What do raw GPS trajectories from Chennai's MTC fleet reveal about actual service patterns, route coverage, and operational performance when cleaned, processed, and visualized spatially?",
-    methodology:
-      "GPS data cleaning and validation pipeline. Trajectory mapping with road network alignment. Hexagonal density binning for coverage analysis. Fleet status aggregation for dashboard metrics. Animated visualizations for temporal pattern analysis.",
-    analysis:
-      "Python-based pipeline (GeoPandas, Pandas, Shapely, NumPy, Folium). Multiple visualization types generated: animated trajectories, hexbin density maps, road-aligned animations, vector field visualizations, and MTC fleet dashboard. CMA (Chennai Metropolitan Area) boundary integration for spatial context.",
-    insights:
-      "GPS data reveals significant deviation from scheduled routes in peak hours. Hexbin density maps show coverage concentration in north-south corridors with sparse east-west connectivity. Fleet status data indicates utilization imbalances across depots.",
-    outcome:
-      "Suite of interactive HTML visualizations (animated maps, density heatmaps, fleet dashboard), cleaned GPS dataset, and reusable Python analysis scripts. Analysis feeds into the broader TransitData Hub platform for Chennai.",
-    tags: ["GPS", "Transit", "Folium", "Python", "MTC", "Trajectory Analysis"],
-    featured: false,
-  },
-  {
     slug: "bengaluru-contamination-risk-dashboard",
     title: "Bengaluru Water Quality & Contamination Risk Dashboard",
     city: "Bengaluru, Karnataka",
