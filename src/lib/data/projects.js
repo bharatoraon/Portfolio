@@ -7,18 +7,22 @@ export const projects = [
     year: "2026",
     thumbnail: "/thumbnails/chhaya.jpg",
     liveUrl: "https://chhaya.bharatoraon.com/",
+    adoptedFrom: {
+      name: "DETOUR",
+      url: "https://detour-infrared-hackathon.vercel.app/"
+    },
     mapCenter: { lat: 12.9716, lng: 77.5946, zoom: 12 },
     mapEmbeds: [
       { label: "Chhaya Interactive App", file: "https://chhaya.bharatoraon.com/" },
     ],
     shortDescription:
-      "A 'Smart Google Maps for Walking' that optimizes for human comfort and safety by calculating routes based on high-resolution microclimates, building shadows, wind tunnels, and personalized user personas.",
+      "A 'Smart Google Maps for Walking' (adopted from the DETOUR project) that optimizes for human comfort and safety by calculating routes based on high-resolution microclimates, building shadows, wind tunnels, and personalized user personas.",
     context:
       "Traditional routing engines prioritize the shortest physical distance, often exposing pedestrians to extreme urban heat, blazing sun, and uncomfortable microclimates in mega-cities like Dubai, Delhi, and Barcelona.",
     problem:
       "How can we integrate high-resolution environmental raster data (UTCI, solar radiation, wind speed) with vector street networks to mathematically calculate the most thermally comfortable and safe walking route for different user demographics?",
     methodology:
-      "Built a custom routing engine that overlays OpenStreetMap street networks (stored in Supabase PostGIS) with 2D microclimate rasters retrieved from the Infrared.city AI oracle. Routes are scored using A* search based on dynamic persona weights (Athlete, Elderly, Tourist) that prioritize shade, nature, and cooling wind.",
+      "Adopted from the DETOUR project (developed for the Infrared Hackathon), this custom routing engine overlays OpenStreetMap street networks (stored in Supabase PostGIS) with 2D microclimate rasters retrieved from the Infrared.city AI oracle. Routes are scored using A* search based on dynamic persona weights (Athlete, Elderly, Tourist) that prioritize shade, nature, and cooling wind.",
     analysis:
       "Backend developed in Python (FastAPI, NetworkX, GeoPandas) running on a 16GB Hugging Face Space. Spatial database managed via Supabase (PostGIS) holding over 1 million pre-processed street edges. Frontend built in React + Vite with Mapbox GL JS for interactive heat-map rendering.",
     insights:

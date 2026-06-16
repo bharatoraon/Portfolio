@@ -84,20 +84,35 @@
       {/each}
     </div>
 
-    <!-- Live link -->
-    {#if project.liveUrl}
-      <div class="mt-6">
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-sm font-medium bg-ink text-white px-4 py-2 hover:bg-ink-muted transition-colors"
-        >
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-          </svg>
-          Visit Live Site
-        </a>
+    <!-- Live link & Adoption info -->
+    {#if project.liveUrl || project.adoptedFrom}
+      <div class="mt-6 flex flex-wrap gap-3">
+        {#if project.liveUrl}
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-sm font-medium bg-ink text-white px-4 py-2 hover:bg-ink-muted transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Visit Live Site
+          </a>
+        {/if}
+        {#if project.adoptedFrom}
+          <a
+            href={project.adoptedFrom.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-sm font-medium border border-border text-ink bg-white px-4 py-2 hover:bg-paper-mid hover:border-ink-muted transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            Adopted from {project.adoptedFrom.name}
+          </a>
+        {/if}
       </div>
     {/if}
   </div>

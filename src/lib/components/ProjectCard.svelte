@@ -98,12 +98,11 @@
   });
 </script>
 
-<a
-  href="/projects/{project.slug}"
+<div
   class="group block border border-border bg-white hover:border-ink-muted transition-colors duration-200 card-hover"
 >
   <!-- Thumbnail / map -->
-  <div class="relative w-full {compact ? 'h-36' : 'h-48'} bg-paper-mid overflow-hidden">
+  <a href="/projects/{project.slug}" class="relative w-full {compact ? 'h-36' : 'h-48'} bg-paper-mid overflow-hidden block">
     {#if project.thumbnail}
       <img
         src={project.thumbnail}
@@ -128,13 +127,15 @@
     <div class="absolute top-3 right-3 z-10">
       <span class="text-xs text-ink-muted font-mono bg-white/80 px-1.5 py-0.5">{project.year}</span>
     </div>
-  </div>
+  </a>
 
   <!-- Content -->
   <div class="p-5">
     <div class="flex items-start justify-between gap-4 mb-2">
       <h3 class="text-base font-semibold text-ink leading-snug group-hover:text-accent transition-colors">
-        {project.title}
+        <a href="/projects/{project.slug}" class="hover:text-accent transition-colors">
+          {project.title}
+        </a>
       </h3>
     </div>
 
@@ -158,26 +159,40 @@
     </div>
 
     <div class="mt-4 flex items-center justify-between">
-      <div class="flex items-center gap-1.5 text-xs font-medium text-ink group-hover:gap-2.5 transition-all">
+      <a href="/projects/{project.slug}" class="flex items-center gap-1.5 text-xs font-medium text-ink group-hover:gap-2.5 transition-all">
         View case study
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
         </svg>
+      </a>
+      <div class="flex items-center gap-3">
+        {#if project.liveUrl}
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-1 text-xs text-ink-muted hover:text-ink transition-colors"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+            Live
+          </a>
+        {/if}
+        {#if project.adoptedFrom}
+          <a
+            href={project.adoptedFrom.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-1 text-xs text-ink-muted hover:text-ink transition-colors"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            {project.adoptedFrom.name}
+          </a>
+        {/if}
       </div>
-      {#if project.liveUrl}
-        <a
-          href={project.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onclick={(e) => e.stopPropagation()}
-          class="flex items-center gap-1 text-xs text-ink-muted hover:text-ink transition-colors"
-        >
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-          </svg>
-          Live
-        </a>
-      {/if}
     </div>
   </div>
-</a>
+</div>
