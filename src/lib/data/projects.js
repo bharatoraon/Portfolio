@@ -263,6 +263,7 @@ export const projects = [
     tags: ["Water Quality", "Data Pipeline", "GeoPandas", "MapLibre GL", "Bengaluru", "Python"],
     featured: true,
   },
+  /*
   {
     slug: "chennai-multimodal-transit-connectivity",
     title: "Chennai Multimodal Transit Connectivity Dashboard",
@@ -292,4 +293,5 @@ export const projects = [
     tags: ["RAPTOR Algorithm", "Routing", "Leaflet", "GeoPandas", "Shapely", "Transit Connectivity", "Chennai"],
     featured: true,
   },
+  */
 ];
