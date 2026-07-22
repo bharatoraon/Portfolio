@@ -5,6 +5,7 @@
   import 'katex/dist/katex.min.css';
 
   import SEO from '$lib/components/SEO.svelte';
+  import PipelineFlow from '$lib/components/PipelineFlow.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
 
@@ -44,7 +45,7 @@
     // Split by top-level section headings (## )
     const rawParts = article.content.split(/(?=\n##\s)/);
     return rawParts.map(part => {
-      // Inline visual tag replacements for map scale emojis
+      // Inline visual tag replacements for map scale badges
       let formattedPart = part
         .replace(/🔴 (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">🔴 $1</span>')
         .replace(/🟡 (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">🟡 $1</span>')
@@ -145,9 +146,13 @@
       {/if}
     </header>
 
-    <!-- Main Content Area with Marked HTML & KaTeX Math Rendering -->
+    <!-- Main Content Area with Marked HTML & Interactive Figures -->
     <main class="space-y-6 font-sans text-base md:text-lg leading-relaxed text-ink-light">
       {#each sections as section}
+        {#if section.raw.includes('1. System Architecture') || section.raw.includes('Decoupled Spatial ETL Pipeline')}
+          <PipelineFlow />
+        {/if}
+
         <div class="prose-custom">
           {@html section.html}
         </div>
