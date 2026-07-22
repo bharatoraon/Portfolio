@@ -227,24 +227,24 @@
           <PipelineFlow />
         {/if}
 
-        {#if section.raw.includes('Spatial Grid Cell Partitioning') || section.raw.includes('2. High-Performance Spatial Data Engineering')}
+        {#if section.raw.includes('2. High-Performance Spatial Data Engineering')}
           <GridSimulator />
         {/if}
 
-        {#if section.raw.includes('4. Mathematical Modeling') || section.raw.includes('Performance Gap')}
+        {#if section.raw.includes('4. Mathematical Modeling: Measuring scheduled vs. empirical performance gap')}
           <FormulaExplainer />
         {/if}
 
         <!-- Article 2 Component Triggers -->
-        {#if section.raw.includes('Streaming & Spatial Filtering') || section.raw.includes('The System Architecture')}
+        {#if section.raw.includes('1. Streaming & Spatial Filtering of Big Geospatial Data')}
           <DigitalTwinFlow />
         {/if}
 
-        {#if section.raw.includes('Classifying Building Use via Spatial Heuristics') || section.raw.includes('3. Classifying Building Use')}
+        {#if section.raw.includes('3. Classifying Building Use via Spatial Heuristics')}
           <BuildingUseClassifier />
         {/if}
 
-        {#if section.raw.includes('Non-Linear EV Battery Charging Simulator') || section.raw.includes('5. High-Performance Client-Side Rendering')}
+        {#if section.raw.includes('5. High-Performance Client-Side Rendering & EV Simulation')}
           <EVChargingSimulator />
         {/if}
 
