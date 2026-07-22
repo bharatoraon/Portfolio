@@ -7,6 +7,7 @@
   import SEO from '$lib/components/SEO.svelte';
   import PipelineFlow from '$lib/components/PipelineFlow.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
+  import CodeSnippetViewer from '$lib/components/CodeSnippetViewer.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
 
   // Configure marked with KaTeX math extension for inline $...$ and block $$...$$ formulas
@@ -159,6 +160,7 @@
 
         {#if section.raw.includes('Spatial Grid Cell Partitioning') || section.raw.includes('2. High-Performance Spatial Data Engineering')}
           <GridSimulator />
+          <CodeSnippetViewer />
         {/if}
 
         {#if section.raw.includes('4. Mathematical Modeling') || section.raw.includes('Performance Gap')}
@@ -226,8 +228,8 @@
     color: #374151;
   }
   :global(.prose-custom pre) {
-    background-color: #0f172a;
-    color: #f8fafc;
+    background-color: #f5f4f0;
+    color: #1a1a1a;
     padding: 1.25rem;
     border-radius: 0.75rem;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -237,12 +239,12 @@
     margin-bottom: 1.75rem;
     overflow-x: auto;
     white-space: pre;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e5e5;
   }
   :global(.prose-custom code) {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    background-color: #f1f5f9;
-    color: #0f172a;
+    background-color: #ebebeb;
+    color: #1a1a1a;
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
     font-size: 0.85em;
@@ -262,26 +264,26 @@
     margin-bottom: 2rem;
     border-collapse: collapse;
     background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e5e5;
     border-radius: 0.5rem;
     overflow: hidden;
     font-size: 0.875rem;
   }
   :global(.prose-custom th) {
-    background-color: #f8fafc;
+    background-color: #f5f4f0;
     padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e5e5e5;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-weight: 600;
-    color: #0f172a;
+    color: #1a1a1a;
   }
   :global(.prose-custom td) {
     padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
-    color: #334155;
+    border: 1px solid #e5e5e5;
+    color: #2d2d2d;
   }
   :global(.prose-custom tr:hover) {
-    background-color: #f8fafc;
+    background-color: #fafafa;
   }
   :global(.prose-custom ul) {
     list-style-type: disc;
@@ -298,26 +300,26 @@
     line-height: 1.65;
   }
   :global(.prose-custom blockquote) {
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid #1a1a1a;
     padding-left: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
-    background-color: #f8fafc;
+    background-color: #f5f4f0;
     font-style: italic;
-    color: #1e293b;
+    color: #1a1a1a;
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
   }
   :global(.prose-custom hr) {
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
-    border-color: #e2e8f0;
+    border-color: #e5e5e5;
   }
   :global(.prose-custom strong) {
     font-weight: 600;
-    color: #0f172a;
+    color: #1a1a1a;
   }
   :global(.katex-display) {
     margin: 1.5rem 0;
