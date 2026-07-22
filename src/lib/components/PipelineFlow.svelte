@@ -6,15 +6,13 @@
   const stages = [
     {
       id: 1,
-      title: "1. Raw Input Datasets",
+      title: "1. Input Datasets",
       subtitle: "Heterogeneous GTFS & Telemetry Ingestion",
-      icon: "M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21 3.582 4 8 4s8-1.79 8-4",
-      badge: "Ingestion Layer",
-      color: "border-blue-500 bg-blue-50/50 text-blue-700",
+      badge: "Ingestion",
       inputs: [
         "MTC Bus GTFS (routes.txt, trips.txt, stop_times.txt, frequencies.txt)",
         "CMRL Metro GTFS (routes.txt, trips.txt, stop_times.txt, parent_stations)",
-        "GPS Telemetry (~5.5 GB CSVs: Vehicle IDs, Lat/Lon coordinates, speed vectors, timestamps)"
+        "GPS Telemetry (~5.5 GB CSV logs: vehicle IDs, lat/lon coordinates, speed vectors, timestamps)"
       ],
       details: "Converts raw static transit schedules and unstructured 5.5 GB GPS telemetry logs into standardized spatial data structures."
     },
@@ -22,9 +20,7 @@
       id: 2,
       title: "2. Parallel Precomputations",
       subtitle: "GTFS & GPS Spatial ETL Pipeline",
-      icon: "M13 10V3L4 14h7v7l9-11h-7z",
-      badge: "ETL & Precompute",
-      color: "border-purple-500 bg-purple-50/50 text-purple-700",
+      badge: "Precompute",
       scripts: [
         { name: "precompute_gtfs_metrics.py", task: "Filters by IST peak period, computes median headways & stop sequence distances." },
         { name: "precompute_gps_metrics.py", task: "Filters by UTC timestamp, builds 0.002° grid spatial index for O(1) candidate lookups & speed resolvers." }
@@ -33,11 +29,9 @@
     },
     {
       id: 3,
-      title: "3. Connectivity Modeling Engine",
-      subtitle: "Multimodal RAPTOR & Scorecard Generator",
-      icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
+      title: "3. Connectivity Engine",
+      subtitle: "Multimodal RAPTOR & Scorecards",
       badge: "Core Engine",
-      color: "border-emerald-500 bg-emerald-50/50 text-emerald-700",
       scripts: [
         { name: "build_connectivity.py", task: "Generates walking transfer links (< 200m), runs Multimodal RAPTOR routing, computes PTAL & ΔNHI scorecards, and clips against CMA boundary." }
       ],
@@ -45,11 +39,9 @@
     },
     {
       id: 4,
-      title: "4. Spatial Map Dashboard",
+      title: "4. Map Dashboard",
       subtitle: "Core GIS Visualizer (index.html)",
-      icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6",
-      badge: "Map Interface",
-      color: "border-amber-500 bg-amber-50/50 text-amber-700",
+      badge: "GIS Interface",
       outputs: [
         "Stops Connectivity GeoJSON layer",
         "Metro Enriched GeoJSON layer",
@@ -61,9 +53,7 @@
       id: 5,
       title: "5. Performance Tracker",
       subtitle: "Operational Bottleneck Inspector (compare.html)",
-      icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
-      badge: "Analytics Layer",
-      color: "border-red-500 bg-red-50/50 text-red-700",
+      badge: "Analytics",
       outputs: [
         "Summary JSON metrics feed",
         "Red-Gray-Green operational delta scale",
@@ -113,56 +103,55 @@
 +---------------------------------------------------+  +-------------------------------------------+`;
 </script>
 
-<div class="my-10 bg-white border border-border rounded-xl shadow-sm overflow-hidden font-sans">
-  <!-- Header with View Mode Toggle -->
-  <div class="border-b border-border bg-paper flex flex-wrap items-center justify-between px-6 py-4 gap-3">
+<div class="my-10 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
+  <!-- Minimal Header Matching Site Style -->
+  <div class="border-b border-border bg-paper px-6 py-4 flex flex-wrap items-center justify-between gap-3">
     <div>
       <div class="flex items-center gap-2">
-        <span class="text-xs font-mono font-bold text-ink-muted">System Architecture</span>
-        <span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-          Decoupled Spatial ETL Pipeline
+        <span class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Figure 1</span>
+        <span class="text-xs font-mono text-ink-light bg-paper-mid border border-border px-2 py-0.5 rounded">
+          Spatial ETL Pipeline
         </span>
       </div>
-      <h4 class="text-xs md:text-sm font-sans font-semibold text-ink mt-1">
-        Multimodal GTFS & Telemetry Data Processing Architecture
+      <h4 class="text-sm font-sans font-semibold text-ink mt-1">
+        Decoupled Multimodal GTFS & Telemetry Architecture
       </h4>
     </div>
 
-    <div class="flex gap-1.5 p-1 bg-paper-mid rounded-lg border border-border text-xs">
+    <div class="flex gap-1 bg-paper-mid p-1 rounded-md border border-border text-xs">
       <button
         type="button"
         onclick={() => viewMode = 'diagram'}
-        class="px-3 py-1.5 font-semibold rounded-md transition-all cursor-pointer {viewMode === 'diagram' ? 'bg-white text-ink shadow-xs border border-border' : 'text-ink-muted hover:text-ink border border-transparent'}"
+        class="px-3 py-1 font-sans font-medium rounded transition-colors cursor-pointer {viewMode === 'diagram' ? 'bg-ink text-white' : 'text-ink-muted hover:text-ink'}"
       >
-        Interactive Architecture
+        Interactive
       </button>
       <button
         type="button"
         onclick={() => viewMode = 'ascii'}
-        class="px-3 py-1.5 font-mono font-semibold rounded-md transition-all cursor-pointer {viewMode === 'ascii' ? 'bg-white text-ink shadow-xs border border-border' : 'text-ink-muted hover:text-ink border border-transparent'}"
+        class="px-3 py-1 font-mono font-medium rounded transition-colors cursor-pointer {viewMode === 'ascii' ? 'bg-ink text-white' : 'text-ink-muted hover:text-ink'}"
       >
         ASCII Flow
       </button>
     </div>
   </div>
 
-  <div class="p-6 md:p-8">
+  <div class="p-6 md:p-8 bg-paper">
     {#if viewMode === 'diagram'}
-      <!-- Interactive Pipeline Visualizer -->
       <div class="space-y-6">
-        <!-- Stage Stepper Tabs -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <!-- Stage Selection Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {#each stages as stage}
             <button
               type="button"
               onclick={() => activeStage = stage.id}
-              class="p-3 text-left rounded-lg border transition-all cursor-pointer flex flex-col justify-between gap-2 {activeStage === stage.id ? 'bg-white border-blue-600 ring-2 ring-blue-500/20 shadow-sm' : 'bg-paper hover:bg-white border-border'}"
+              class="p-3 text-left rounded-lg border transition-all cursor-pointer flex flex-col justify-between gap-2 {activeStage === stage.id ? 'bg-white border-ink ring-1 ring-ink/10 shadow-xs' : 'bg-white/60 hover:bg-white border-border text-ink-muted'}"
             >
               <div class="flex items-center justify-between">
-                <span class="w-6 h-6 rounded-full text-xs font-mono font-bold flex items-center justify-center {activeStage === stage.id ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700'}">
+                <span class="w-5 h-5 rounded-full text-[11px] font-mono font-semibold flex items-center justify-center {activeStage === stage.id ? 'bg-ink text-white' : 'bg-paper-mid text-ink-muted'}">
                   {stage.id}
                 </span>
-                <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded border {stage.color}">
+                <span class="text-[10px] font-mono uppercase text-ink-muted">
                   {stage.badge}
                 </span>
               </div>
@@ -173,62 +162,62 @@
           {/each}
         </div>
 
-        <!-- Flow Visualizer Cards -->
-        <div class="relative bg-slate-900 text-slate-100 p-6 rounded-xl font-sans space-y-6 shadow-inner border border-slate-800">
+        <!-- Active Stage Panel -->
+        <div class="bg-white border border-border p-6 rounded-lg font-sans space-y-5 shadow-2xs">
           {#if curr}
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <div>
-                <span class="text-xs font-mono text-blue-400 font-semibold">{curr.badge} &bull; Stage {curr.id} of 5</span>
-                <h3 class="text-base md:text-lg font-bold text-white mt-0.5">{curr.title}</h3>
-                <p class="text-xs text-slate-400 font-mono mt-0.5">{curr.subtitle}</p>
+                <div class="text-xs font-mono text-ink-muted">Stage {curr.id} of 5 &bull; {curr.badge}</div>
+                <h3 class="text-base font-bold text-ink mt-0.5">{curr.title}</h3>
+                <p class="text-xs text-ink-muted font-sans mt-0.5">{curr.subtitle}</p>
               </div>
               <div class="flex items-center gap-2">
                 <button
                   type="button"
                   disabled={activeStage === 1}
                   onclick={() => activeStage = Math.max(1, activeStage - 1)}
-                  class="px-3 py-1.5 text-xs font-mono rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-200 border border-slate-700 cursor-pointer"
+                  class="px-3 py-1 text-xs font-sans rounded bg-paper-warm hover:bg-paper-mid disabled:opacity-40 disabled:cursor-not-allowed text-ink border border-border cursor-pointer transition-colors"
                 >
-                  &larr; Prev
+                  &larr; Previous
                 </button>
                 <button
                   type="button"
                   disabled={activeStage === 5}
                   onclick={() => activeStage = Math.min(5, activeStage + 1)}
-                  class="px-3 py-1.5 text-xs font-mono rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white border border-blue-500 cursor-pointer"
+                  class="px-3 py-1 text-xs font-sans rounded bg-ink hover:bg-ink-light disabled:opacity-40 disabled:cursor-not-allowed text-white cursor-pointer transition-colors"
                 >
                   Next &rarr;
                 </button>
               </div>
             </div>
 
-            <p class="text-xs md:text-sm text-slate-300 leading-relaxed font-sans">
+            <p class="text-xs md:text-sm text-ink-light leading-relaxed font-sans">
               {curr.details}
             </p>
 
             <!-- Detailed Ingestion Files or Scripts -->
             {#if curr.inputs}
-              <div class="space-y-2 pt-2">
-                <h5 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Input Data Streams</h5>
-                <ul class="space-y-1.5">
+              <div class="space-y-2 pt-1">
+                <h5 class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Input Data Streams</h5>
+                <div class="space-y-1.5">
                   {#each curr.inputs as inp}
-                    <li class="text-xs font-mono text-emerald-300 bg-slate-800/80 px-3 py-2 rounded border border-slate-700 flex items-center gap-2">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    <div class="text-xs font-mono text-ink-light bg-paper-warm px-3 py-2 rounded border border-border flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-ink-muted"></span>
                       {inp}
-                    </li>
+                    </div>
                   {/each}
-                </ul>
+                </div>
               </div>
             {/if}
 
             {#if curr.scripts}
-              <div class="space-y-2 pt-2">
-                <h5 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Python Execution Modules</h5>
+              <div class="space-y-2 pt-1">
+                <h5 class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Python Execution Modules</h5>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {#each curr.scripts as scr}
-                    <div class="bg-slate-800/80 p-3 rounded border border-slate-700 space-y-1">
-                      <div class="text-xs font-mono font-bold text-purple-300">[{scr.name}]</div>
-                      <div class="text-xs text-slate-300 font-sans leading-relaxed">{scr.task}</div>
+                    <div class="bg-paper-warm p-3 rounded border border-border space-y-1">
+                      <div class="text-xs font-mono font-bold text-ink">[{scr.name}]</div>
+                      <div class="text-xs text-ink-light font-sans leading-relaxed">{scr.task}</div>
                     </div>
                   {/each}
                 </div>
@@ -236,16 +225,16 @@
             {/if}
 
             {#if curr.outputs}
-              <div class="space-y-2 pt-2">
-                <h5 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Generated Artifacts & Output Layers</h5>
-                <ul class="space-y-1.5">
+              <div class="space-y-2 pt-1">
+                <h5 class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Generated Artifacts & Output Layers</h5>
+                <div class="space-y-1.5">
                   {#each curr.outputs as out}
-                    <li class="text-xs font-mono text-amber-300 bg-slate-800/80 px-3 py-2 rounded border border-slate-700 flex items-center gap-2">
-                      <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    <div class="text-xs font-mono text-ink-light bg-paper-warm px-3 py-2 rounded border border-border flex items-center gap-2">
+                      <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
                       {out}
-                    </li>
+                    </div>
                   {/each}
-                </ul>
+                </div>
               </div>
             {/if}
           {/if}
@@ -256,9 +245,9 @@
       <div class="space-y-3">
         <div class="flex items-center justify-between text-xs text-ink-muted font-mono">
           <span>Decoupled Pipeline Architecture (ASCII Schematic)</span>
-          <span>5-Stage Execution Flow</span>
+          <span>5-Stage Flow</span>
         </div>
-        <pre class="bg-slate-900 text-slate-100 p-5 rounded-xl font-mono text-[11px] md:text-xs overflow-x-auto whitespace-pre leading-relaxed shadow-inner border border-slate-800">{asciiDiagram}</pre>
+        <pre class="bg-paper-warm text-ink p-5 rounded-lg font-mono text-[11px] md:text-xs overflow-x-auto whitespace-pre leading-relaxed border border-border">{asciiDiagram}</pre>
       </div>
     {/if}
   </div>

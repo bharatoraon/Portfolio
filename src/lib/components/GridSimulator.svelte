@@ -109,17 +109,17 @@
   });
 </script>
 
-<div class="my-10 bg-paper-mid border border-border rounded-xl overflow-hidden shadow-sm font-sans">
-  <!-- Academic Header -->
-  <div class="bg-white border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+<div class="my-10 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
+  <!-- Minimal Header Matching Site Style -->
+  <div class="bg-paper border-b border-border px-6 py-4 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-2">
-      <span class="text-xs font-mono font-bold text-ink-muted">Figure 1</span>
-      <h4 class="text-xs md:text-sm font-sans font-semibold text-ink">
+      <span class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Figure 3</span>
+      <h4 class="text-sm font-sans font-semibold text-ink">
         Spatial Grid Indexing & Candidate Stop Filtering (500m × 500m)
       </h4>
     </div>
     <span class="text-xs font-mono text-ink-muted hidden sm:inline">
-      Drag GPS coordinate to evaluate 3x3 search space
+      Drag coordinate target to evaluate 3x3 search space
     </span>
   </div>
 
@@ -130,7 +130,7 @@
         bind:this={svgElement}
         width={width}
         height={height}
-        class="bg-white border border-border rounded-lg cursor-crosshair shadow-sm"
+        class="bg-white border border-border rounded-lg cursor-crosshair shadow-2xs"
         onmousedown={handleMouseDown}
         onmousemove={handleMouseMove}
         ontouchstart={handleTouchStart}
@@ -148,12 +148,12 @@
               y={padding + cy * gridSize}
               width={gridSize}
               height={gridSize}
-              stroke="#e2e8f0"
+              stroke="#e5e5e5"
               stroke-width="1"
               stroke-dasharray={isHigh && !isPrim ? "3,3" : undefined}
               fill={isPrim 
-                ? 'rgba(37, 99, 235, 0.12)' 
-                : (isHigh ? 'rgba(37, 99, 235, 0.04)' : 'transparent')}
+                ? 'rgba(26, 26, 26, 0.08)' 
+                : (isHigh ? 'rgba(26, 26, 26, 0.02)' : 'transparent')}
               class="transition-colors duration-150"
             />
           {/each}
@@ -187,7 +187,7 @@
             cx={stop.x}
             cy={stop.y}
             r={stop.isEvaluated ? 4.5 : 3}
-            fill={stop.isEvaluated ? '#2563eb' : '#94a3b8'}
+            fill={stop.isEvaluated ? '#1a1a1a' : '#9ca3af'}
             opacity={stop.isEvaluated ? 1 : 0.4}
             class="transition-all duration-150"
           />
@@ -201,35 +201,35 @@
             width={gridSize}
             height={gridSize}
             fill="transparent"
-            stroke="#2563eb"
+            stroke="#1a1a1a"
             stroke-width="2"
             class="pointer-events-none"
           />
         {/if}
 
-        <!-- GPS Reticle Crosshair -->
-        <line x1={pingX - 12} y1={pingY} x2={pingX + 12} y2={pingY} stroke="#dc2626" stroke-width="1.5" />
-        <line x1={pingX} y1={pingY - 12} x2={pingX} y2={pingY + 12} stroke="#dc2626" stroke-width="1.5" />
+        <!-- GIS Reticle Crosshair -->
+        <line x1={pingX - 12} y1={pingY} x2={pingX + 12} y2={pingY} stroke="#1a1a1a" stroke-width="1.5" />
+        <line x1={pingX} y1={pingY - 12} x2={pingX} y2={pingY + 12} stroke="#1a1a1a" stroke-width="1.5" />
         <circle
           cx={pingX}
           cy={pingY}
           r="4"
-          fill="#dc2626"
+          fill="#1a1a1a"
           stroke="#ffffff"
           stroke-width="1.5"
-          class="shadow-sm cursor-grab active:cursor-grabbing"
+          class="shadow-2xs cursor-grab active:cursor-grabbing"
         />
       </svg>
     </div>
 
     <div class="flex-1 w-full max-w-[280px] flex flex-col gap-4">
-      <div class="bg-white border border-border p-4 rounded-lg shadow-sm">
-        <h5 class="text-xs font-mono font-semibold text-ink-muted mb-3">Spatial Query State</h5>
-        <div class="space-y-3">
+      <div class="bg-white border border-border p-4 rounded-lg shadow-2xs space-y-3">
+        <h5 class="text-xs font-mono font-semibold text-ink-muted">Spatial Query State</h5>
+        <div class="space-y-2.5">
           <div class="flex items-center justify-between text-xs">
             <span class="text-ink-light flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span>
-              GPS Coordinate
+              <span class="w-2 h-2 rounded-full bg-ink inline-block"></span>
+              GPS Location Target
             </span>
             <span class="font-mono font-semibold text-ink bg-paper-mid px-1.5 py-0.5 rounded">
               [{pingX.toFixed(0)}, {pingY.toFixed(0)}]
@@ -238,43 +238,43 @@
 
           <div class="flex items-center justify-between text-xs">
             <span class="text-ink-light flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded bg-blue-600 inline-block opacity-70"></span>
-              Active Cell & 3x3 Neighborhood
+              <span class="w-2 h-2 rounded bg-ink-light inline-block opacity-70"></span>
+              Primary Cell & Neighborhood
             </span>
-            <span class="font-mono font-semibold text-blue-700">
+            <span class="font-mono font-semibold text-ink">
               C{activeCell.cx}, R{activeCell.cy}
             </span>
           </div>
         </div>
       </div>
 
-      <div class="bg-white border border-border p-4 rounded-lg shadow-sm">
-        <h5 class="text-xs font-mono font-semibold text-ink-muted mb-3">Computation Reduction</h5>
+      <div class="bg-white border border-border p-4 rounded-lg shadow-2xs space-y-3">
+        <h5 class="text-xs font-mono font-semibold text-ink-muted">Computation Reduction</h5>
         
-        <div class="space-y-3.5">
+        <div class="space-y-3">
           <div>
             <div class="flex justify-between text-xs text-ink-light mb-1">
               <span>Full Search Space</span>
               <span class="font-semibold">{totalStops} stops</span>
             </div>
-            <div class="w-full bg-slate-100 h-2 rounded overflow-hidden">
-              <div class="bg-slate-400 h-full rounded" style="width: 100%"></div>
+            <div class="w-full bg-paper-mid h-2 rounded overflow-hidden">
+              <div class="bg-ink-muted h-full rounded" style="width: 100%"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs text-ink-light mb-1">
               <span>Indexed Candidate Stops</span>
-              <span class="font-semibold text-blue-700">{evaluatedCount} stops</span>
+              <span class="font-semibold text-ink">{evaluatedCount} stops</span>
             </div>
-            <div class="w-full bg-slate-100 h-2 rounded overflow-hidden">
-              <div class="bg-blue-600 h-full rounded transition-all duration-300" style="width: {(evaluatedCount / totalStops) * 100}%"></div>
+            <div class="w-full bg-paper-mid h-2 rounded overflow-hidden">
+              <div class="bg-ink h-full rounded transition-all duration-300" style="width: {(evaluatedCount / totalStops) * 100}%"></div>
             </div>
           </div>
 
-          <div class="border-t border-border pt-3 mt-1 flex items-center justify-between text-xs">
-            <span class="font-semibold text-ink">Distance Calculations Saved</span>
-            <span class="font-mono font-bold text-emerald-700">
+          <div class="border-t border-border pt-2.5 mt-1 flex items-center justify-between text-xs">
+            <span class="font-semibold text-ink">Distance Calcs Saved</span>
+            <span class="font-mono font-bold text-ink">
               -{efficiency}%
             </span>
           </div>

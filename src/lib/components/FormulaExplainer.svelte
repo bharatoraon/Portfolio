@@ -107,27 +107,27 @@
   }
 </script>
 
-<div class="my-10 bg-white border border-border rounded-xl shadow-sm overflow-hidden font-sans">
+<div class="my-10 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
   <!-- Academic Header with Tab Switches -->
-  <div class="border-b border-border bg-paper flex flex-wrap items-center justify-between px-6 py-3.5 gap-3">
+  <div class="border-b border-border bg-paper flex flex-wrap items-center justify-between px-6 py-4 gap-3">
     <div class="flex items-center gap-2">
-      <span class="text-xs font-mono font-bold text-ink-muted">Figure 2</span>
-      <h4 class="text-xs md:text-sm font-sans font-semibold text-ink">
+      <span class="text-xs font-mono font-semibold text-ink-muted uppercase tracking-wider">Figure 2</span>
+      <h4 class="text-sm font-sans font-semibold text-ink">
         Interactive Access Time & Performance Gap Model
       </h4>
     </div>
-    <div class="flex gap-1.5 p-1 bg-paper-mid rounded-lg border border-border">
+    <div class="flex gap-1 bg-paper-mid p-1 rounded-md border border-border text-xs">
       <button
         type="button"
         onclick={() => { activeTab = 'ptal'; selectedVar = 'walktime'; }}
-        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer {activeTab === 'ptal' ? 'bg-white text-ink shadow-xs border border-border' : 'text-ink-muted hover:text-ink border border-transparent'}"
+        class="px-3 py-1 font-sans font-medium rounded transition-colors cursor-pointer {activeTab === 'ptal' ? 'bg-ink text-white' : 'text-ink-muted hover:text-ink'}"
       >
         PTAL Access Time Model
       </button>
       <button
         type="button"
         onclick={() => { activeTab = 'nhi'; selectedVar = 'deltanhi'; }}
-        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer {activeTab === 'nhi' ? 'bg-white text-ink shadow-xs border border-border' : 'text-ink-muted hover:text-ink border border-transparent'}"
+        class="px-3 py-1 font-sans font-medium rounded transition-colors cursor-pointer {activeTab === 'nhi' ? 'bg-ink text-white' : 'text-ink-muted hover:text-ink'}"
       >
         Network Health Index (ΔNHI)
       </button>
@@ -137,7 +137,7 @@
   <div class="p-6 md:p-8 space-y-6">
     {#if activeTab === 'ptal'}
       <div>
-        <h3 class="text-sm md:text-base font-semibold text-ink mb-1">
+        <h3 class="text-sm font-semibold text-ink mb-1">
           Public Transport Accessibility Level (PTAL)
         </h3>
         <p class="text-xs text-ink-muted leading-relaxed">
@@ -146,40 +146,40 @@
       </div>
 
       <!-- Formula interactive diagram -->
-      <div class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-xs overflow-x-auto shadow-inner space-y-3">
-        <div class="text-slate-400 border-b border-slate-800 pb-2 flex justify-between">
-          <span>Mathematical Formula</span>
+      <div class="bg-paper-warm text-ink p-5 rounded-lg font-mono text-xs overflow-x-auto border border-border space-y-3">
+        <div class="text-ink-muted border-b border-border pb-2 flex justify-between">
+          <span>Mathematical Expression</span>
           <span>Click variables to inspect</span>
         </div>
 
         <div class="pt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-base font-semibold">
-          <span class="text-slate-300">AccessTime =</span>
+          <span class="text-ink-light">AccessTime =</span>
           
           <button 
             type="button"
             onclick={() => selectVar('walktime')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'walktime' ? 'bg-blue-600 text-white ring-2 ring-blue-400' : 'bg-slate-800 text-blue-400 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'walktime' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             WalkTime ({walkTime.toFixed(1)}m)
           </button>
           
-          <span class="text-slate-300">+</span>
+          <span class="text-ink-light">+</span>
 
           <button 
             type="button"
             onclick={() => selectVar('swt')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'swt' ? 'bg-amber-600 text-white ring-2 ring-amber-400' : 'bg-slate-800 text-amber-400 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'swt' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             SWT ({swt.toFixed(1)}m)
           </button>
         </div>
 
         <div class="pt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
-          <span class="text-slate-300">Accessibility Index (AI) =</span>
+          <span class="text-ink-light">Accessibility Index (AI) =</span>
           <button 
             type="button"
             onclick={() => selectVar('ai')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'ai' ? 'bg-emerald-600 text-white ring-2 ring-emerald-400' : 'bg-slate-800 text-emerald-400 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'ai' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             30 / AccessTime ({accessibilityIndex})
           </button>
@@ -191,7 +191,7 @@
         <div class="space-y-2">
           <div class="flex justify-between text-xs">
             <label for="walkDistance" class="font-medium text-ink">Walk Distance (m)</label>
-            <span class="font-mono font-bold text-ink-light">{walkDistance} m</span>
+            <span class="font-mono font-semibold text-ink-light">{walkDistance} m</span>
           </div>
           <input
             id="walkDistance"
@@ -200,7 +200,7 @@
             max="800"
             step="25"
             bind:value={walkDistance}
-            class="w-full accent-blue-600 cursor-pointer"
+            class="w-full accent-ink cursor-pointer"
           />
           <div class="text-[11px] text-ink-muted">Walk Time: {walkTime.toFixed(1)} min</div>
         </div>
@@ -208,7 +208,7 @@
         <div class="space-y-2">
           <div class="flex justify-between text-xs">
             <label for="headway" class="font-medium text-ink">Headway (min)</label>
-            <span class="font-mono font-bold text-ink-light">{headway} min</span>
+            <span class="font-mono font-semibold text-ink-light">{headway} min</span>
           </div>
           <input
             id="headway"
@@ -217,7 +217,7 @@
             max="60"
             step="1"
             bind:value={headway}
-            class="w-full accent-amber-600 cursor-pointer"
+            class="w-full accent-ink cursor-pointer"
           />
           <div class="text-[11px] text-ink-muted">Scheduled Wait: {swt.toFixed(1)} min</div>
         </div>
@@ -227,7 +227,7 @@
           <select
             id="mode"
             bind:value={mode}
-            class="w-full text-xs font-medium bg-white border border-border rounded-md px-3 py-2 text-ink shadow-2xs focus:ring-1 focus:ring-blue-500"
+            class="w-full text-xs font-medium bg-white border border-border rounded-md px-3 py-2 text-ink shadow-2xs focus:ring-1 focus:ring-ink"
           >
             <option value="bus">Bus (Buffer: +2.0 min)</option>
             <option value="suburban">Suburban Rail (Buffer: +1.5 min)</option>
@@ -246,19 +246,19 @@
         <div class="h-8 w-px bg-border hidden sm:block"></div>
         <div>
           <div class="text-xs text-ink-muted">Accessibility Index (AI)</div>
-          <div class="text-xl font-bold font-mono text-blue-700">{accessibilityIndex}</div>
+          <div class="text-xl font-bold font-mono text-accent">{accessibilityIndex}</div>
         </div>
         <div class="h-8 w-px bg-border hidden sm:block"></div>
         <div>
           <div class="text-xs text-ink-muted">PTAL Access Score Category</div>
-          <div class="text-xs font-semibold font-mono text-emerald-700 mt-1">
+          <div class="text-xs font-semibold font-mono text-ink mt-1">
             {accessibilityIndex >= 5 ? 'High Access (Level 5)' : (accessibilityIndex >= 2.5 ? 'Moderate Access (Level 3-4)' : 'Low Access / Transit Desert')}
           </div>
         </div>
       </div>
     {:else}
       <div>
-        <h3 class="text-sm md:text-base font-semibold text-ink mb-1">
+        <h3 class="text-sm font-semibold text-ink mb-1">
           Network Health Index Gap (ΔNHI)
         </h3>
         <p class="text-xs text-ink-muted leading-relaxed">
@@ -267,9 +267,9 @@
       </div>
 
       <!-- Formula interactive diagram -->
-      <div class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-xs overflow-x-auto shadow-inner space-y-3">
-        <div class="text-slate-400 border-b border-slate-800 pb-2 flex justify-between">
-          <span>Mathematical Formula</span>
+      <div class="bg-paper-warm text-ink p-5 rounded-lg font-mono text-xs overflow-x-auto border border-border space-y-3">
+        <div class="text-ink-muted border-b border-border pb-2 flex justify-between">
+          <span>Mathematical Expression</span>
           <span>Click variables to inspect</span>
         </div>
 
@@ -277,32 +277,32 @@
           <button 
             type="button"
             onclick={() => selectVar('deltanhi')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'deltanhi' ? 'bg-purple-600 text-white ring-2 ring-purple-400' : 'bg-slate-800 text-purple-300 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'deltanhi' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             ΔNHI
           </button>
           
-          <span class="text-slate-300">=</span>
+          <span class="text-ink-light">=</span>
 
           <button 
             type="button"
             onclick={() => selectVar('nhigps')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'nhigps' ? 'bg-blue-600 text-white ring-2 ring-blue-400' : 'bg-slate-800 text-blue-400 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'nhigps' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             NHI_GPS ({nhiGps.toFixed(1)})
           </button>
 
-          <span class="text-slate-300">-</span>
+          <span class="text-ink-light">-</span>
 
           <button 
             type="button"
             onclick={() => selectVar('nhisch')}
-            class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'nhisch' ? 'bg-amber-600 text-white ring-2 ring-amber-400' : 'bg-slate-800 text-amber-400 hover:bg-slate-700'}"
+            class="px-2 py-0.5 rounded transition-colors cursor-pointer border {selectedVar === 'nhisch' ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-border hover:border-ink'}"
           >
             NHI_Sch ({nhiSch.toFixed(1)})
           </button>
 
-          <span class="text-slate-300">=</span>
+          <span class="text-ink-light">=</span>
 
           <span class="px-2.5 py-0.5 rounded font-mono text-sm md:text-base font-bold border {deltaClass.color}">
             {deltaNhi > 0 ? '+' : ''}{deltaNhi.toFixed(1)} ({deltaClass.label})
@@ -317,11 +317,11 @@
             <button 
               type="button" 
               onclick={() => selectVar('cv')}
-              class="font-medium text-ink hover:text-blue-600 underline decoration-dotted text-left"
+              class="font-medium text-ink hover:text-accent underline decoration-dotted text-left"
             >
               Headway Variation (CV)
             </button>
-            <span class="font-mono font-bold text-ink-light">{cv}</span>
+            <span class="font-mono font-semibold text-ink-light">{cv}</span>
           </div>
           <input
             id="cv"
@@ -330,7 +330,7 @@
             max="1.2"
             step="0.05"
             bind:value={cv}
-            class="w-full accent-blue-600 cursor-pointer"
+            class="w-full accent-ink cursor-pointer"
           />
           <div class="text-[11px] text-ink-muted">
             {cv <= 0.2 ? 'Regular (On Time)' : (cv <= 0.6 ? 'Moderate Irregularity' : 'Severe Bunching')}
@@ -342,11 +342,11 @@
             <button 
               type="button" 
               onclick={() => selectVar('speed')}
-              class="font-medium text-ink hover:text-blue-600 underline decoration-dotted text-left"
+              class="font-medium text-ink hover:text-accent underline decoration-dotted text-left"
             >
               Avg Travel Speed (km/h)
             </button>
-            <span class="font-mono font-bold text-ink-light">{speed} km/h</span>
+            <span class="font-mono font-semibold text-ink-light">{speed} km/h</span>
           </div>
           <input
             id="speed"
@@ -355,7 +355,7 @@
             max="25"
             step="1"
             bind:value={speed}
-            class="w-full accent-emerald-600 cursor-pointer"
+            class="w-full accent-ink cursor-pointer"
           />
           <div class="text-[11px] text-ink-muted">Speed Score: {sSpeed.toFixed(0)} / 100</div>
         </div>
@@ -365,11 +365,11 @@
             <button 
               type="button" 
               onclick={() => selectVar('resilience')}
-              class="font-medium text-ink hover:text-blue-600 underline decoration-dotted text-left"
+              class="font-medium text-ink hover:text-accent underline decoration-dotted text-left"
             >
               Overlapping Routes
             </button>
-            <span class="font-mono font-bold text-ink-light">{routesCount} routes</span>
+            <span class="font-mono font-semibold text-ink-light">{routesCount} routes</span>
           </div>
           <input
             id="routesCount"
@@ -378,7 +378,7 @@
             max="8"
             step="1"
             bind:value={routesCount}
-            class="w-full accent-purple-600 cursor-pointer"
+            class="w-full accent-ink cursor-pointer"
           />
           <div class="text-[11px] text-ink-muted">Resilience: {sResilience.toFixed(0)} / 100</div>
         </div>
@@ -393,7 +393,7 @@
         <div class="h-8 w-px bg-border hidden sm:block"></div>
         <div>
           <div class="text-xs text-ink-muted">GPS Telemetry Index (NHI_GPS)</div>
-          <div class="text-xl font-bold font-mono text-blue-700">{nhiGps.toFixed(1)}</div>
+          <div class="text-xl font-bold font-mono text-accent">{nhiGps.toFixed(1)}</div>
         </div>
         <div class="h-8 w-px bg-border hidden sm:block"></div>
         <div>
@@ -407,13 +407,13 @@
 
     <!-- Shared Variable Inspector Panel -->
     {#if selectedVar && variables[selectedVar]}
-      <div class="bg-blue-50/70 border border-blue-200 p-4 rounded-lg text-xs space-y-1.5 shadow-2xs">
+      <div class="bg-paper-warm border border-border p-4 rounded-lg text-xs space-y-1.5 shadow-2xs">
         <div class="flex items-center justify-between">
-          <div class="font-bold text-blue-950 font-sans">{variables[selectedVar].name}</div>
-          <span class="font-mono text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">Inspector</span>
+          <div class="font-semibold text-ink font-sans">{variables[selectedVar].name}</div>
+          <span class="font-mono text-[10px] bg-paper-mid text-ink-muted px-2 py-0.5 rounded">Inspector</span>
         </div>
-        <div class="font-mono text-blue-700 font-semibold">{variables[selectedVar].formula}</div>
-        <div class="text-blue-900/90 leading-relaxed pt-0.5">{variables[selectedVar].description}</div>
+        <div class="font-mono text-ink-light font-semibold">{variables[selectedVar].formula}</div>
+        <div class="text-ink-muted leading-relaxed pt-0.5">{variables[selectedVar].description}</div>
       </div>
     {/if}
   </div>
