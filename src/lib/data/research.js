@@ -169,7 +169,7 @@ A naive spatial join comparing every GPS coordinate ping \$N\$ to every bus stop
 ### The Solution: Spatial Grid Cell Partitioning
 To bypass this bottleneck, we engineered a custom **Spatial Grid Cell Index** in Python. The coordinate space of the Chennai Metropolitan Area (CMA) is partitioned into a grid of 0.002-degree cells (approximately \$220 \\times 220\$ meters near Chennai's latitude of \$13^\\circ\\text{N}\$).
 
-\`\`\`python
+\`\`\`python:spatial_grid_indexing.py
 # Grid size definition (~220m cells near Chennai lat ~13N)
 grid_size = 0.002
 grid = defaultdict(list)
@@ -192,7 +192,7 @@ for stop in stops_raw["features"]:
 
 During telemetry processing, instead of comparing a GPS ping to all stops in the database, the system calculates the grid cell of the ping in \$O(1)\$ constant time. It then evaluates distances *only* against bus stops located in that cell and its 8 immediate neighboring cells, filtering by matching route numbers:
 
-\`\`\`python
+\`\`\`python:spatial_query_neighbor.py
 # Spatial Query Logic for a GPS Ping (lon, lat) on route_name
 cell_x = int(lon / grid_size)
 cell_y = int(lat / grid_size)
@@ -236,7 +236,7 @@ Because transit networks are multimodal, passengers walk between bus stops, metr
 3. For every stop, it queries the index to identify all other transit stops within a **200-meter walk buffer**.
 4. These are added to the routing graph as walk edges, enabling seamless multimodal transfers.
 
-\`\`\`python
+\`\`\`python:multimodal_raptor_routing.py
 # Excerpt from walking transfer network index
 from shapely.strtree import STRtree
 

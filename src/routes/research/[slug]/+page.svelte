@@ -7,14 +7,90 @@
   import SEO from '$lib/components/SEO.svelte';
   import PipelineFlow from '$lib/components/PipelineFlow.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
-  import CodeSnippetViewer from '$lib/components/CodeSnippetViewer.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
 
-  // Configure marked with KaTeX math extension for inline $...$ and block $$...$$ formulas
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function escapeAttr(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\n/g, '&#10;');
+  }
+
+  // Custom code renderer for marked to render every code snippet with IDE header, line numbers & copy button
+  const renderer = new marked.Renderer();
+  renderer.code = function({ text, lang }) {
+    const rawLang = lang || '';
+    let filename = 'code_snippet.py';
+    let displayLang = 'PYTHON 3.11';
+
+    if (rawLang.includes(':')) {
+      const parts = rawLang.split(':');
+      displayLang = parts[0].toUpperCase();
+      filename = parts[1];
+    } else if (rawLang) {
+      displayLang = rawLang.toUpperCase();
+      filename = `module.${rawLang === 'python' ? 'py' : rawLang}`;
+    }
+
+    const lines = text.split('\n');
+    const linesHtml = lines.map((line, idx) => `
+      <div class="table-row hover:bg-paper-mid/60 transition-colors">
+        <div class="table-cell text-right pr-4 select-none text-ink-muted opacity-40 w-8">${idx + 1}</div>
+        <div class="table-cell whitespace-pre">${escapeHtml(line)}</div>
+      </div>
+    `).join('');
+
+    return `
+      <div class="my-8 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
+        <div class="bg-paper border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 select-none">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
+            </div>
+            <span class="text-xs font-mono font-bold text-ink">${filename}</span>
+            <span class="text-[11px] font-mono text-ink-muted bg-paper-mid px-2 py-0.5 rounded border border-border">
+              ${displayLang}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onclick="navigator.clipboard.writeText(this.getAttribute('data-code')); this.innerText = 'Copied!'; setTimeout(() => this.innerText = 'Copy', 2000);"
+            data-code="${escapeAttr(text)}"
+            class="px-2.5 py-1 text-xs font-mono text-ink-muted hover:text-ink bg-white border border-border hover:border-ink rounded transition-colors cursor-pointer"
+          >
+            Copy
+          </button>
+        </div>
+
+        <div class="bg-paper-warm text-ink p-5 font-mono text-xs overflow-x-auto leading-relaxed border-t border-border">
+          <div class="table w-full">
+            ${linesHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  // Configure marked with KaTeX math extension & custom code renderer
   marked.use(markedKatex({
     throwOnError: false,
     nonStandard: true
   }));
+
+  marked.use({ renderer });
 
   marked.setOptions({
     gfm: true,
@@ -160,7 +236,6 @@
 
         {#if section.raw.includes('Spatial Grid Cell Partitioning') || section.raw.includes('2. High-Performance Spatial Data Engineering')}
           <GridSimulator />
-          <CodeSnippetViewer />
         {/if}
 
         {#if section.raw.includes('4. Mathematical Modeling') || section.raw.includes('Performance Gap')}
@@ -226,36 +301,6 @@
     margin-bottom: 1.25rem;
     line-height: 1.75;
     color: #374151;
-  }
-  :global(.prose-custom pre) {
-    background-color: #f5f4f0;
-    color: #1a1a1a;
-    padding: 1.25rem;
-    border-radius: 0.75rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    margin-top: 1.75rem;
-    margin-bottom: 1.75rem;
-    overflow-x: auto;
-    white-space: pre;
-    border: 1px solid #e5e5e5;
-  }
-  :global(.prose-custom code) {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    background-color: #ebebeb;
-    color: #1a1a1a;
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.85em;
-  }
-  :global(.prose-custom pre code) {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: inherit;
-    white-space: pre;
   }
   :global(.prose-custom table) {
     width: 100%;
