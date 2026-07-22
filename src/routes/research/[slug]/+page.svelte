@@ -1,11 +1,19 @@
 <script>
   import { onMount } from 'svelte';
   import { marked } from 'marked';
+  import markedKatex from 'marked-katex-extension';
+  import 'katex/dist/katex.min.css';
+
   import SEO from '$lib/components/SEO.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
 
-  // Configure marked for clean GFM rendering
+  // Configure marked with KaTeX math extension for inline $...$ and block $$...$$ formulas
+  marked.use(markedKatex({
+    throwOnError: false,
+    nonStandard: true
+  }));
+
   marked.setOptions({
     gfm: true,
     breaks: true
@@ -137,7 +145,7 @@
       {/if}
     </header>
 
-    <!-- Main Content Area with Marked HTML Rendering -->
+    <!-- Main Content Area with Marked HTML & KaTeX Math Rendering -->
     <main class="space-y-6 font-sans text-base md:text-lg leading-relaxed text-ink-light">
       {#each sections as section}
         <div class="prose-custom">
@@ -305,5 +313,11 @@
   :global(.prose-custom strong) {
     font-weight: 600;
     color: #0f172a;
+  }
+  :global(.katex-display) {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
   }
 </style>
