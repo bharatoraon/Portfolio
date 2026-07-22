@@ -9,8 +9,6 @@
 
   // Scroll Progress
   let scrollPercent = $state(0);
-  // Sticky ToC Active State
-  let activeHeadingId = $state('');
 
   function handleScroll() {
     const scrollTop = window.scrollY;
@@ -187,7 +185,6 @@
   }
 
   let blocks = $derived(parseMarkdown(article?.content || ''));
-  let headings = $derived(blocks.filter(b => (b.type === 'h2' || b.type === 'h3') && b.id));
 
   // Clipboard copy helper
   let copiedText = $state(/** @type {Record<number, boolean>} */ ({}));
@@ -209,29 +206,8 @@
 
   onMount(() => {
     window.addEventListener('scroll', handleScroll);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            activeHeadingId = entry.target.id;
-          }
-        });
-      },
-      { rootMargin: '-10% 0px -75% 0px' }
-    );
-
-    headings.forEach((h) => {
-      const el = document.getElementById(h.id || '');
-      if (el) observer.observe(el);
-    });
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      headings.forEach((h) => {
-        const el = document.getElementById(h.id || '');
-        if (el) observer.unobserve(el);
-      });
     };
   });
 
@@ -274,7 +250,7 @@
     jsonLd={[breadcrumbsJsonLd, articleJsonLd]}
   />
 
-  <article class="max-w-4xl mx-auto px-6 py-12 md:py-20">
+  <article class="max-w-3xl mx-auto px-6 py-12 md:py-20">
     <!-- Back to Research -->
     <a 
       href="/research" 
@@ -322,120 +298,94 @@
       {/if}
     </header>
 
-    <!-- Main Layout with Sticky Table of Contents -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-      
-      <!-- Content Area -->
-      <main class="lg:col-span-8 space-y-6 text-ink-light font-sans text-base md:text-lg leading-relaxed">
-        {#each blocks as block, idx}
-          {#if block.type === 'h2'}
-            <h2 id={block.id} class="text-xl md:text-2xl font-serif font-bold text-ink mt-12 mb-4 pt-4 border-t border-border/50 scroll-mt-24">
-              {block.text}
-            </h2>
-            {#if block.text?.includes('4. Mathematical Modeling')}
-              <FormulaExplainer />
-            {/if}
-          {:else if block.type === 'h3'}
-            <h3 id={block.id} class="text-lg md:text-xl font-serif font-semibold text-ink mt-8 mb-3 scroll-mt-24">
-              {block.text}
-            </h3>
-            {#if block.text?.includes('Spatial Grid Cell Partitioning')}
-              <GridSimulator />
-            {/if}
-          {:else if block.type === 'p'}
-            <p class="leading-relaxed mb-6">
-              {@html formatInline(block.text)}
-            </p>
-          {:else if block.type === 'ul'}
-            <ul class="list-disc list-outside pl-6 space-y-2 mb-6 text-base">
-              {#each block.items as item}
-                <li class="leading-relaxed">
-                  {@html formatInline(item)}
-                </li>
-              {/each}
-            </ul>
-          {:else if block.type === 'ol'}
-            <ol class="list-decimal list-outside pl-6 space-y-2 mb-6 text-base">
-              {#each block.items as item}
-                <li class="leading-relaxed">
-                  {@html formatInline(item)}
-                </li>
-              {/each}
-            </ol>
-          {:else if block.type === 'code'}
-            <div class="relative group my-8">
-              <div class="flex items-center justify-between px-4 py-2 bg-paper-dark border-b border-border/20 rounded-t-lg">
-                <span class="text-xs font-mono text-ink-muted">{block.lang || 'text'}</span>
-                <button 
-                  onclick={() => copyToClipboard(block.code, idx)}
-                  class="text-xs font-mono text-ink-muted hover:text-white transition-colors"
-                >
-                  {copiedText[idx] ? 'Copied! ✓' : 'Copy'}
-                </button>
-              </div>
-              <pre class="p-4 bg-paper-dark text-paper rounded-b-lg overflow-x-auto font-mono text-xs md:text-sm leading-relaxed"><code>{block.code}</code></pre>
+    <!-- Main Content Area -->
+    <main class="space-y-6 text-ink-light font-sans text-base md:text-lg leading-relaxed">
+      {#each blocks as block, idx}
+        {#if block.type === 'h2'}
+          <h2 id={block.id} class="text-xl md:text-2xl font-serif font-bold text-ink mt-12 mb-4 pt-4 border-t border-border/50 scroll-mt-24">
+            {block.text}
+          </h2>
+          {#if block.text?.includes('4. Mathematical Modeling')}
+            <FormulaExplainer />
+          {/if}
+        {:else if block.type === 'h3'}
+          <h3 id={block.id} class="text-lg md:text-xl font-serif font-semibold text-ink mt-8 mb-3 scroll-mt-24">
+            {block.text}
+          </h3>
+          {#if block.text?.includes('Spatial Grid Cell Partitioning')}
+            <GridSimulator />
+          {/if}
+        {:else if block.type === 'p'}
+          <p class="leading-relaxed mb-6">
+            {@html formatInline(block.text)}
+          </p>
+        {:else if block.type === 'ul'}
+          <ul class="list-disc list-outside pl-6 space-y-2 mb-6 text-base">
+            {#each block.items as item}
+              <li class="leading-relaxed">
+                {@html formatInline(item)}
+              </li>
+            {/each}
+          </ul>
+        {:else if block.type === 'ol'}
+          <ol class="list-decimal list-outside pl-6 space-y-2 mb-6 text-base">
+            {#each block.items as item}
+              <li class="leading-relaxed">
+                {@html formatInline(item)}
+              </li>
+            {/each}
+          </ol>
+        {:else if block.type === 'code'}
+          <div class="relative group my-8">
+            <div class="flex items-center justify-between px-4 py-2 bg-paper-dark border-b border-border/20 rounded-t-lg">
+              <span class="text-xs font-mono text-ink-muted">{block.lang || 'text'}</span>
+              <button 
+                onclick={() => copyToClipboard(block.code, idx)}
+                class="text-xs font-mono text-ink-muted hover:text-white transition-colors"
+              >
+                {copiedText[idx] ? 'Copied! ✓' : 'Copy'}
+              </button>
             </div>
-          {:else if block.type === 'math'}
-            <div class="my-8 py-5 px-6 bg-white border border-border rounded-lg text-center overflow-x-auto select-all font-serif italic text-base md:text-lg text-ink shadow-sm">
-              {@html formatInline(block.formula)}
-            </div>
-          {:else if block.type === 'table'}
-            <div class="my-8 overflow-x-auto border border-border rounded-lg shadow-2xs bg-white">
-              <table class="w-full text-left text-xs md:text-sm">
-                <thead class="bg-paper-mid border-b border-border font-mono text-ink font-semibold">
-                  <tr>
-                    {#each block.headers as header}
-                      <th class="p-3 border-r border-border last:border-r-0">{header}</th>
+            <pre class="p-4 bg-paper-dark text-paper rounded-b-lg overflow-x-auto font-mono text-xs md:text-sm leading-relaxed"><code>{block.code}</code></pre>
+          </div>
+        {:else if block.type === 'math'}
+          <div class="my-8 py-5 px-6 bg-white border border-border rounded-lg text-center overflow-x-auto select-all font-serif italic text-base md:text-lg text-ink shadow-sm">
+            {@html formatInline(block.formula)}
+          </div>
+        {:else if block.type === 'table'}
+          <div class="my-8 overflow-x-auto border border-border rounded-lg shadow-2xs bg-white">
+            <table class="w-full text-left text-xs md:text-sm">
+              <thead class="bg-paper-mid border-b border-border font-mono text-ink font-semibold">
+                <tr>
+                  {#each block.headers as header}
+                    <th class="p-3 border-r border-border last:border-r-0">{header}</th>
+                  {/each}
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border">
+                {#each block.rows as row}
+                  <tr class="hover:bg-paper-warm/50 transition-colors">
+                    {#each row as cell}
+                      <td class="p-3 border-r border-border last:border-r-0">
+                        {@html formatInline(cell)}
+                      </td>
                     {/each}
                   </tr>
-                </thead>
-                <tbody class="divide-y divide-border">
-                  {#each block.rows as row}
-                    <tr class="hover:bg-paper-warm/50 transition-colors">
-                      {#each row as cell}
-                        <td class="p-3 border-r border-border last:border-r-0">
-                          {@html formatInline(cell)}
-                        </td>
-                      {/each}
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
-            </div>
-          {/if}
-        {/each}
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        {/if}
+      {/each}
 
-        <!-- Footer Callout -->
-        <div class="mt-16 pt-8 border-t border-border text-sm text-ink-muted flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <p>Published in Research & Policy Essays</p>
-          <a href="/contact" class="text-accent font-semibold hover:underline">
-            Discuss this methodology &rarr;
-          </a>
-        </div>
-      </main>
-
-      <!-- Sidebar Table of Contents -->
-      <aside class="hidden lg:block lg:col-span-4">
-        <div class="sticky top-28 bg-paper border border-border rounded-xl p-5 shadow-2xs space-y-4">
-          <h4 class="text-xs font-mono font-bold text-ink uppercase tracking-wider">Table of Contents</h4>
-          {#if headings.length}
-            <nav class="space-y-2 text-xs">
-              {#each headings as heading}
-                <a 
-                  href="#{heading.id}"
-                  class="block transition-all hover:text-accent font-sans leading-snug {heading.type === 'h3' ? 'pl-3' : ''} {activeHeadingId === heading.id ? 'text-accent font-bold translate-x-1' : 'text-ink-muted'}"
-                >
-                  {heading.text}
-                </a>
-              {/each}
-            </nav>
-          {:else}
-            <p class="text-xs text-ink-muted font-sans">No sections found.</p>
-          {/if}
-        </div>
-      </aside>
-
-    </div>
+      <!-- Footer Callout -->
+      <div class="mt-16 pt-8 border-t border-border text-sm text-ink-muted flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <p>Published in Research & Policy Essays</p>
+        <a href="/contact" class="text-accent font-semibold hover:underline">
+          Discuss this methodology &rarr;
+        </a>
+      </div>
+    </main>
   </article>
 {:else}
   <div class="max-w-4xl mx-auto px-6 py-20 text-center">
