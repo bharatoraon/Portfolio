@@ -115,8 +115,9 @@
   // Split content into logical sections by `## ` so we can insert interactive tools cleanly
   let sections = $derived.by(() => {
     if (!article?.content) return [];
-    // Split by top-level section headings (## )
-    const rawParts = article.content.split(/(?=\n##\s)/);
+    // Strip horizontal rule dividers (---) for a seamless reading flow
+    const cleanContent = article.content.replace(/^---\s*$/gm, '');
+    const rawParts = cleanContent.split(/(?=\n##\s)/);
     return rawParts.map(part => {
       // Inline visual tag replacements for map scale badges
       let formattedPart = part
@@ -368,9 +369,7 @@
     border-bottom-right-radius: 0.5rem;
   }
   :global(.prose-custom hr) {
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
-    border-color: #e5e5e5;
+    display: none;
   }
   :global(.prose-custom strong) {
     font-weight: 600;
