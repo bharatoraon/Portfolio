@@ -720,4 +720,42 @@ Our project demonstrates that complex 3D digital twins can run effectively on st
 5. **Add Interactive Simulations**: Use client-side logic to run models, keeping your web applications fast and engaging.
 `
   }
+,
+  {
+    slug: "unlocking-chennai-transit-open-data",
+    title: "Unlocking Chennai: Why Transit Data is the New Public Infrastructure",
+    subtitle: "Reflections from the Build for Bharat Fellowship at CUMTA on why digital infrastructure and open data are foundational to modern urban mobility",
+    date: "2026-04-12",
+    readTime: "5 min read",
+    category: "Policy Essay",
+    tags: ["Open Data", "CUMTA", "Build for Bharat", "Urban Mobility", "Chennai", "Public Infrastructure", "Civic Tech"],
+    excerpt: "When we talk about investing in public transit, our minds go to physical engineering—concrete, tracks, and electric buses. Reflections from my Build for Bharat fellowship at CUMTA on why digital infrastructure and open transit data are just as foundational as physical infrastructure.",
+    content: `When we talk about investing in public transit, our minds instantly go to physical engineering: pouring thousands of tons of concrete, laying steel railway tracks, and procuring fleets of electric buses.
+
+But during my Build for Bharat fellowship at the Chennai Unified Metropolitan Transport Authority (CUMTA), I realized we are missing half the equation.
+
+In a modern, rapidly expanding city, digital infrastructure is just as foundational as physical infrastructure. And the most valuable raw material we have to build that digital framework is **Open Data**.
+
+Traditionally, government transit data lives in locked filing cabinets, static PDFs, or isolated spreadsheets hidden deep inside departmental silos. It is protected as a high-security internal asset rather than treated as a public utility.
+
+My work focused on breaking those silos open. By transitioning CUMTA from static route-count heuristics into empirical schedule and telemetry validation pipelines, we laid the groundwork for a true Open Data portal.
+
+But the biggest lesson wasn't how to compile the data, it was what happens when you hand the keys over to the public.
+
+## Unlocking the Multiplier Effect
+
+If a government agency tries to build every commuter transit app, routing engine, and mapping tool by itself, it will inevitably lag behind the fast-paced demands of millions of daily travelers.
+
+Open Data introduces a powerful **multiplier effect**.
+
+When you clean, standardize, and open up transit data like GTFS schedules or spatial infrastructure layers to the public, you turn the entire city into a decentralized research and development lab.
+
+Suddenly, civic tech developers, urban planning students, and open-source contributors aren't just consumers of transit; they become co-creators of it. They build hyper-localized apps, uncover hidden accessibility blind spots, and design innovative solutions that a single government IT department would never have the time or resources to build.
+
+## The Enduring Legacy of Civic Tech
+
+The absolute success of a civic technology initiative isn't measured by how many lines of code you push to a proprietary server during the fellowship. It is measured by the systems we help open up for the community.
+
+Concrete roads will eventually wear down, and bus fleets will inevitably be replaced. But clean, standardized, accessible public data sets an enduring foundation for the future of urban mobility. By opening up Chennai's transit data, we aren't just mapping the city's transport network for today, we are empowering the public ecosystem to build the smart transit solutions of tomorrow.`
+  }
 ];
