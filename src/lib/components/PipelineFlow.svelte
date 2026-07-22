@@ -16,7 +16,7 @@
         "CMRL Metro GTFS (routes.txt, trips.txt, stop_times.txt, parent_stations)",
         "GPS Telemetry (~5.5 GB CSVs: Vehicle IDs, Lat/Lon coordinates, speed vectors, timestamps)"
       ],
-      details: "Converts raw static transit schedules and unstructured 5.5 GB GPS telemetry logs into standardized spatial spatial data structures."
+      details: "Converts raw static transit schedules and unstructured 5.5 GB GPS telemetry logs into standardized spatial data structures."
     },
     {
       id: 2,
@@ -72,6 +72,8 @@
       details: "Highlights severe transit reliability deficits (ΔNHI < -10) caused by real-world traffic congestion."
     }
   ];
+
+  let curr = $derived(stages.find(s => s.id === activeStage));
 
   const asciiDiagram = `+-----------------------------------------------------------------------------------+
 |                              1. RAW INPUT DATASETS                                |
@@ -173,7 +175,6 @@
 
         <!-- Flow Visualizer Cards -->
         <div class="relative bg-slate-900 text-slate-100 p-6 rounded-xl font-sans space-y-6 shadow-inner border border-slate-800">
-          {@const curr = stages.find(s => s.id === activeStage)}
           {#if curr}
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
               <div>
