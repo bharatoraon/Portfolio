@@ -152,44 +152,7 @@ This article details the spatial engineering, algorithmic design, and mathematic
 
 To deliver a high-performance GIS dashboard that loads instantly in a web browser without requiring a heavy, expensive map server (like GeoServer) or database backends, we designed a decoupled, two-tier architecture:
 
-\`\`\`
-+-----------------------------------------------------------------------------------+
-|                              1. RAW INPUT DATASETS                                |
-|  - MTC Bus GTFS: routes.txt, trips.txt, stop_times.txt, frequencies.txt           |
-|  - CMRL Metro GTFS: routes.txt, trips.txt, stop_times.txt, parent_stations        |
-|  - GPS Telemetry: Raw coordinates, timestamps, vehicle IDs (~5.5 GB CSVs)        |
-+-----------------------------------------------------------------------------------+
-                                         |
-                                         v
-+-----------------------------------------------------------------------------------+
-|                        2. PERIOD-SPECIFIC PRECOMPUTATIONS                         |
-|  [precompute_gtfs_metrics.py]                 [precompute_gps_metrics.py]         |
-|  - Filter by active period (Local IST)        - Filter by active period (UTC)     |
-|  - Calculate median peak headways            - Grid spatial index (O(1) lookups) |
-|  - Reconstruct route stop distances           - Speed & Arrival visits resolver   |
-+-----------------------------------------------------------------------------------+
-                  |                                      |
-                  v (gtfs_precomputed_{period}.json)     v (gps_precomputed_{period}.json)
-+-----------------------------------------------------------------------------------+
-|                          3. CONNECTIVITY MODELING ENGINE                          |
-|  [build_connectivity.py]                                                          |
-|  - Ingest precomputed schedule & empirical metrics & static layers                |
-|  - Multimodal transfer graph generation (walking links < 200m)                    |
-|  - Multimodal RAPTOR routing (hops to nearest terminals)                           |
-|  - Calculate PTAL & NHI scorecard (Scheduled vs. GPS-Empirical)                    |
-|  - Apply spatial clipping against CMA boundary polygon                            |
-+-----------------------------------------------------------------------------------+
-                  |
-                  +----------------------------------+-----------------------------+
-                  |                                  |                             |
-                  v (stops connectivity GeoJSON)     v (metro enriched GeoJSON)    v (summary JSON)
-+---------------------------------------------------+  +-------------------------------------------+
-|       4. CORE MAP DASHBOARD (index.html)          |  |   5. PERFORMANCE TRACKER (compare.html)   |
-| - Switch Period Dropdown toggles JS loads         |  | - Switch Period Dropdown recalculates deltas|
-| - Render Leaflet layers (stops, routes, rail)     |  | - Colors stops on Red-Gray-Green scale    |
-| - Render KPI counters and sidebar bar charts      |  | - Sidebar Top 5 Service Bottlenecks list  |
-+---------------------------------------------------+  +-------------------------------------------+
-\`\`\`
+
 
 1. **Heavy Offline Spatial ETL (Python)**: An asynchronous ingestion engine handles coordinate projections, spatial grid cell indexing, path routing, and mathematical modeling, exporting highly optimized, static GeoJSON and JSON summaries.
 2. **Lightweight GIS Frontend (HTML5/Leaflet.js)**: A single-page application loads these pre-computed files dynamically based on user-selected time periods (Morning Peak, Midday Off-Peak, Evening Peak). It performs no runtime spatial queries or routing, maintaining a fluid 60 FPS user experience.
