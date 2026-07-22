@@ -26,12 +26,12 @@
       .replace(/\n/g, '&#10;');
   }
 
-  // Custom code renderer for marked to render every code snippet with IDE header, line numbers & copy button
+  // Clean, minimal code block renderer without artificial window dots
   const renderer = new marked.Renderer();
   renderer.code = function({ text, lang }) {
     const rawLang = lang || '';
-    let filename = 'code_snippet.py';
-    let displayLang = 'PYTHON 3.11';
+    let filename = '';
+    let displayLang = '';
 
     if (rawLang.includes(':')) {
       const parts = rawLang.split(':');
@@ -52,17 +52,10 @@
 
     return `
       <div class="my-8 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
-        <div class="bg-paper border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 select-none">
-          <div class="flex items-center gap-3">
-            <div class="flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-            </div>
-            <span class="text-xs font-mono font-bold text-ink">${filename}</span>
-            <span class="text-[11px] font-mono text-ink-muted bg-paper-mid px-2 py-0.5 rounded border border-border">
-              ${displayLang}
-            </span>
+        <div class="bg-paper border-b border-border px-5 py-3.5 flex items-center justify-between gap-3 select-none">
+          <div class="flex items-center gap-2.5">
+            ${filename ? `<span class="text-xs font-mono font-semibold text-ink">${filename}</span>` : ''}
+            ${displayLang ? `<span class="text-[11px] font-mono text-ink-muted bg-paper-mid px-2 py-0.5 rounded border border-border">${displayLang}</span>` : ''}
           </div>
 
           <button

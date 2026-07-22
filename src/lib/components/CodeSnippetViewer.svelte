@@ -3,7 +3,7 @@
 
   let { 
     filename = "spatial_grid_indexing.py",
-    language = "Python 3.11",
+    language = "PYTHON 3.11",
     complexity = "O(1) Spatial Cell Lookup",
     code = `# Grid size definition (~220m cells near Chennai lat ~13N)
 grid_size = 0.002
@@ -33,14 +33,9 @@ for stop in stops_raw["features"]:
 </script>
 
 <div class="my-8 bg-white border border-border rounded-xl shadow-2xs overflow-hidden font-sans">
-  <!-- IDE Header -->
-  <div class="bg-paper border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1.5">
-        <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-        <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-        <span class="w-2.5 h-2.5 rounded-full bg-border"></span>
-      </div>
+  <!-- Minimal Header -->
+  <div class="bg-paper border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 select-none">
+    <div class="flex items-center gap-2.5">
       <span class="text-xs font-mono font-bold text-ink">{filename}</span>
       <span class="text-[11px] font-mono text-ink-muted bg-paper-mid px-2 py-0.5 rounded border border-border">
         {language}
