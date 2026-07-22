@@ -158,7 +158,7 @@ To analyze these disparate operators as a unified network, the ingestion pipelin
 
 ### The Unified Data Processing Pipeline
 
-1. **Ingestion & Validation:** Raw feeds (GTFS `.txt` tables and dynamic `JSON` vehicle updates) are fetched, parsed, and checked for schema integrity.
+1. **Ingestion & Validation:** Raw feeds (GTFS \`.txt\` tables and dynamic \`JSON\` vehicle updates) are fetched, parsed, and checked for schema integrity.
 2. **Spatial Standardization:** Coordinates are re-projected from WGS84 (\`EPSG:4326\`) to the local projected coordinate system (\`EPSG:32644 - UTM Zone 44N\`) for precise metric distance calculations.
 3. **Temporal Normalization:** Arrival times, headways, and operational service hours are normalized across all modes into continuous seconds past midnight ($t_{sec}$).
 
