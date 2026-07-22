@@ -372,7 +372,7 @@ For spatial data engineers and urban planners building next-generation transit d
 4. **Evaluate the Delta**: Visualizing GTFS or GPS data in isolation tells only half the story. The most valuable planning insights are found by analyzing the **mathematical difference** between the plan and reality.
 
 By engineering tools that expose these deltas, we can empower transit agencies to make data-driven decisions—shifting resources from theoretical routes to real-world bottlenecks, and building a more reliable, equitable public transit network.`,
-  }
+  },
   {
     slug: "3d-digital-twin-chennai-buildings",
     title: "Architectural Deep-Dive: Building a High-Performance 3D Digital Twin of 500k+ Buildings in the Browser",
