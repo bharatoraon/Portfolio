@@ -1,8 +1,15 @@
 <script>
   import { onMount } from 'svelte';
+  import { marked } from 'marked';
   import SEO from '$lib/components/SEO.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
+
+  // Configure marked for clean GFM rendering
+  marked.setOptions({
+    gfm: true,
+    breaks: true
+  });
 
   let { data } = $props();
   let article = $derived(data?.article);
@@ -16,199 +23,31 @@
     scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
   }
 
-  // Markdown parsing logic into blocks
-  /**
-   * @param {string} content
-   * @returns {any[]}
-   */
-  function parseMarkdown(content) {
-    if (!content) return [];
-    const lines = content.split('\n');
-    /** @type {any[]} */
-    const blocks = [];
-    /** @type {any} */
-    let currentBlock = null;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const trimmed = line.trim();
-
-      // 1. Code Block parsing
-      if (trimmed.startsWith('```')) {
-        if (currentBlock && currentBlock.type === 'code') {
-          blocks.push(currentBlock);
-          currentBlock = null;
-        } else {
-          if (currentBlock) blocks.push(currentBlock);
-          const lang = trimmed.slice(3).trim();
-          currentBlock = { type: 'code', lang, code: [] };
-        }
-        continue;
-      }
-
-      if (currentBlock && currentBlock.type === 'code') {
-        currentBlock.code.push(line);
-        continue;
-      }
-
-      // 2. Math Block parsing
-      if (trimmed.startsWith('$$')) {
-        if (currentBlock && currentBlock.type === 'math') {
-          currentBlock.formula += '\n' + trimmed.replace(/\$\$/g, '');
-          blocks.push(currentBlock);
-          currentBlock = null;
-        } else {
-          if (currentBlock) blocks.push(currentBlock);
-          currentBlock = { type: 'math', formula: trimmed.replace(/\$\$/g, '') };
-          if (trimmed.endsWith('$$') && trimmed.length > 2) {
-            blocks.push(currentBlock);
-            currentBlock = null;
-          }
-        }
-        continue;
-      }
-
-      if (currentBlock && currentBlock.type === 'math') {
-        currentBlock.formula += '\n' + line;
-        continue;
-      }
-
-      // 3. Table parsing
-      if (trimmed.startsWith('|')) {
-        const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
-        if (currentBlock && currentBlock.type === 'table') {
-          if (trimmed.includes(':---') || trimmed.includes('---:')) {
-            continue; // Skip separator line
-          }
-          currentBlock.rows.push(cells);
-        } else {
-          if (currentBlock) blocks.push(currentBlock);
-          currentBlock = { type: 'table', headers: cells, rows: [] };
-        }
-        continue;
-      } else {
-        if (currentBlock && currentBlock.type === 'table') {
-          blocks.push(currentBlock);
-          currentBlock = null;
-        }
-      }
-
-      if (trimmed === '') {
-        if (currentBlock) {
-          blocks.push(currentBlock);
-          currentBlock = null;
-        }
-        continue;
-      }
-
-      // 4. Headings
-      if (trimmed.startsWith('### ')) {
-        if (currentBlock) blocks.push(currentBlock);
-        const text = trimmed.slice(4);
-        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        blocks.push({ type: 'h3', text, id });
-        currentBlock = null;
-        continue;
-      }
-      if (trimmed.startsWith('## ')) {
-        if (currentBlock) blocks.push(currentBlock);
-        const text = trimmed.slice(3);
-        const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        blocks.push({ type: 'h2', text, id });
-        currentBlock = null;
-        continue;
-      }
-
-      // 5. Unordered list items
-      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-        const itemText = trimmed.slice(2);
-        if (currentBlock && currentBlock.type === 'ul') {
-          currentBlock.items.push(itemText);
-        } else {
-          if (currentBlock) blocks.push(currentBlock);
-          currentBlock = { type: 'ul', items: [itemText] };
-        }
-        continue;
-      }
-
-      // 6. Ordered list items
-      if (/^\d+\.\s+/.test(trimmed)) {
-        const itemText = trimmed.replace(/^\d+\.\s+/, '');
-        if (currentBlock && currentBlock.type === 'ol') {
-          currentBlock.items.push(itemText);
-        } else {
-          if (currentBlock) blocks.push(currentBlock);
-          currentBlock = { type: 'ol', items: [itemText] };
-        }
-        continue;
-      }
-
-      // 7. Paragraphs
-      if (currentBlock && currentBlock.type === 'p') {
-        currentBlock.text += ' ' + trimmed;
-      } else {
-        if (currentBlock) blocks.push(currentBlock);
-        currentBlock = { type: 'p', text: trimmed };
-      }
-    }
-
-    if (currentBlock) {
-      blocks.push(currentBlock);
-    }
-
-    blocks.forEach(b => {
-      if (b.type === 'code') {
-        b.code = b.code.join('\n');
-      }
-    });
-
-    return blocks;
-  }
-
-  // Formatter for inline styling
-  /**
-   * @param {string} text
-   * @returns {string}
-   */
-  function formatInline(text) {
-    if (!text) return '';
-    let formatted = text;
-    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-ink font-semibold">$1</strong>');
-    formatted = formatted.replace(/`([^`]+)`/g, '<code class="bg-paper-mid px-1.5 py-0.5 rounded font-mono text-xs text-ink-light">$1</code>');
-    formatted = formatted.replace(/\$([^\$]+)\$/g, '<code class="font-serif italic text-ink bg-paper-mid px-1 py-0.5 rounded">$1</code>');
-    formatted = formatted.replace(/🔴 (.*)/g, '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">🔴 $1</span>');
-    formatted = formatted.replace(/🟡 (.*)/g, '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">🟡 $1</span>');
-    formatted = formatted.replace(/⚪ (.*)/g, '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-paper-mid text-ink-muted border border-border">⚪ $1</span>');
-    formatted = formatted.replace(/🟢 (.*)/g, '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">🟢 $1</span>');
-    
-    return formatted;
-  }
-
-  let blocks = $derived(parseMarkdown(article?.content || ''));
-
-  // Clipboard copy helper
-  let copiedText = $state(/** @type {Record<number, boolean>} */ ({}));
-  /**
-   * @param {string} text
-   * @param {number} id
-   */
-  async function copyToClipboard(text, id) {
-    try {
-      await navigator.clipboard.writeText(text);
-      copiedText = { ...copiedText, [id]: true };
-      setTimeout(() => {
-        copiedText = { ...copiedText, [id]: false };
-      }, 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
-  }
-
   onMount(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
+  });
+
+  // Split content into logical sections by `## ` so we can insert interactive tools cleanly
+  let sections = $derived.by(() => {
+    if (!article?.content) return [];
+    // Split by top-level section headings (## )
+    const rawParts = article.content.split(/(?=\n##\s)/);
+    return rawParts.map(part => {
+      // Inline visual tag replacements for map scale emojis
+      let formattedPart = part
+        .replace(/🔴 (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">🔴 $1</span>')
+        .replace(/🟡 (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 border border-amber-200">🟡 $1</span>')
+        .replace(/⚪ (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-paper-mid text-ink-muted border border-border">⚪ $1</span>')
+        .replace(/🟢 (.*)/g, '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">🟢 $1</span>');
+
+      return {
+        raw: part,
+        html: marked.parse(formattedPart)
+      };
+    });
   });
 
   let breadcrumbsJsonLd = $derived(article ? {
@@ -298,83 +137,19 @@
       {/if}
     </header>
 
-    <!-- Main Content Area -->
-    <main class="space-y-6 text-ink-light font-sans text-base md:text-lg leading-relaxed">
-      {#each blocks as block, idx}
-        {#if block.type === 'h2'}
-          <h2 id={block.id} class="text-xl md:text-2xl font-serif font-bold text-ink mt-12 mb-4 pt-4 border-t border-border/50 scroll-mt-24">
-            {block.text}
-          </h2>
-          {#if block.text?.includes('4. Mathematical Modeling')}
-            <FormulaExplainer />
-          {/if}
-        {:else if block.type === 'h3'}
-          <h3 id={block.id} class="text-lg md:text-xl font-serif font-semibold text-ink mt-8 mb-3 scroll-mt-24">
-            {block.text}
-          </h3>
-          {#if block.text?.includes('Spatial Grid Cell Partitioning')}
-            <GridSimulator />
-          {/if}
-        {:else if block.type === 'p'}
-          <p class="leading-relaxed mb-6">
-            {@html formatInline(block.text)}
-          </p>
-        {:else if block.type === 'ul'}
-          <ul class="list-disc list-outside pl-6 space-y-2 mb-6 text-base">
-            {#each block.items as item}
-              <li class="leading-relaxed">
-                {@html formatInline(item)}
-              </li>
-            {/each}
-          </ul>
-        {:else if block.type === 'ol'}
-          <ol class="list-decimal list-outside pl-6 space-y-2 mb-6 text-base">
-            {#each block.items as item}
-              <li class="leading-relaxed">
-                {@html formatInline(item)}
-              </li>
-            {/each}
-          </ol>
-        {:else if block.type === 'code'}
-          <div class="relative group my-8">
-            <div class="flex items-center justify-between px-4 py-2 bg-paper-dark border-b border-border/20 rounded-t-lg">
-              <span class="text-xs font-mono text-ink-muted">{block.lang || 'text'}</span>
-              <button 
-                onclick={() => copyToClipboard(block.code, idx)}
-                class="text-xs font-mono text-ink-muted hover:text-white transition-colors"
-              >
-                {copiedText[idx] ? 'Copied! ✓' : 'Copy'}
-              </button>
-            </div>
-            <pre class="p-4 bg-paper-dark text-paper rounded-b-lg overflow-x-auto font-mono text-xs md:text-sm leading-relaxed"><code>{block.code}</code></pre>
-          </div>
-        {:else if block.type === 'math'}
-          <div class="my-8 py-5 px-6 bg-white border border-border rounded-lg text-center overflow-x-auto select-all font-serif italic text-base md:text-lg text-ink shadow-sm">
-            {@html formatInline(block.formula)}
-          </div>
-        {:else if block.type === 'table'}
-          <div class="my-8 overflow-x-auto border border-border rounded-lg shadow-2xs bg-white">
-            <table class="w-full text-left text-xs md:text-sm">
-              <thead class="bg-paper-mid border-b border-border font-mono text-ink font-semibold">
-                <tr>
-                  {#each block.headers as header}
-                    <th class="p-3 border-r border-border last:border-r-0">{header}</th>
-                  {/each}
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border">
-                {#each block.rows as row}
-                  <tr class="hover:bg-paper-warm/50 transition-colors">
-                    {#each row as cell}
-                      <td class="p-3 border-r border-border last:border-r-0">
-                        {@html formatInline(cell)}
-                      </td>
-                    {/each}
-                  </tr>
-                {/each}
-              </tbody>
-            </table>
-          </div>
+    <!-- Main Content Area with Marked HTML Rendering -->
+    <main class="space-y-6 font-sans text-base md:text-lg leading-relaxed text-ink-light">
+      {#each sections as section}
+        <div class="prose-custom">
+          {@html section.html}
+        </div>
+
+        {#if section.raw.includes('Spatial Grid Cell Partitioning') || section.raw.includes('2. High-Performance Spatial Data Engineering')}
+          <GridSimulator />
+        {/if}
+
+        {#if section.raw.includes('4. Mathematical Modeling') || section.raw.includes('Performance Gap')}
+          <FormulaExplainer />
         {/if}
       {/each}
 
@@ -394,3 +169,141 @@
     <a href="/research" class="text-accent font-semibold hover:underline">&larr; Back to Research</a>
   </div>
 {/if}
+
+<style>
+  :global(.prose-custom h1) {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.25;
+  }
+  :global(.prose-custom h2) {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(229, 231, 235, 0.8);
+    line-height: 1.3;
+  }
+  :global(.prose-custom h3) {
+    font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.prose-custom h4) {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  :global(.prose-custom p) {
+    margin-bottom: 1.25rem;
+    line-height: 1.75;
+    color: #374151;
+  }
+  :global(.prose-custom pre) {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+    overflow-x: auto;
+    white-space: pre;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  :global(.prose-custom code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background-color: #f1f5f9;
+    color: #0f172a;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.85em;
+  }
+  :global(.prose-custom pre code) {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+    white-space: pre;
+  }
+  :global(.prose-custom table) {
+    width: 100%;
+    text-align: left;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    font-size: 0.875rem;
+  }
+  :global(.prose-custom th) {
+    background-color: #f8fafc;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  :global(.prose-custom td) {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+  }
+  :global(.prose-custom tr:hover) {
+    background-color: #f8fafc;
+  }
+  :global(.prose-custom ul) {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  :global(.prose-custom ol) {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  :global(.prose-custom li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.65;
+  }
+  :global(.prose-custom blockquote) {
+    border-left: 4px solid #2563eb;
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8fafc;
+    font-style: italic;
+    color: #1e293b;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+  }
+  :global(.prose-custom hr) {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-color: #e2e8f0;
+  }
+  :global(.prose-custom strong) {
+    font-weight: 600;
+    color: #0f172a;
+  }
+</style>
