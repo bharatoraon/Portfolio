@@ -130,19 +130,19 @@ CUMTA may not solve everything immediately, but it represents an important shift
   },
   {
     slug: "engineering-the-pulse-of-a-megacity",
-    title: "Engineering the Pulse of a Megacity: Bridging the Transit \"Plan vs. Reality\" Gap with High-Performance Spatial Analytics",
-    subtitle: "A Data-Driven Framework for Real-Time Multimodal Transit Accessibility, Performance Evaluation, and Grid-Cell Optimization in Metropolitan Chennai",
+    title: "Multimodal Transit Connectivity & Real-Time Performance Gaps in Metropolitan Chennai",
+    subtitle: "Integrating GTFS Schedule Feeds with Real-Time Vehicle Telemetry to Measure Accessibility Deficits across 3,500 km²",
     date: "2026-03-30",
     readTime: "16 min read",
     category: "Spatial Intelligence & Analytics",
     tags: ["Spatial Analytics", "Transit Accessibility", "PTAL", "GTFS", "GPS Telemetry", "Urban Mobility", "Chennai"],
     excerpt:
-      "In transit planning, there is a persistent disconnect between static schedule expectations and real-world street congestion. This paper introduces a high-performance spatial analytics framework combining GTFS feeds, real-time GPS telemetry, and 500m grid-cell spatial indexing across 3,500+ square kilometers of metropolitan Chennai.",
-    content: `In transit planning, there is a persistent, expensive disconnect between **what is planned** on paper and **what is experienced** on the street. Traditional GIS models rely heavily on static transit schedules—such as General Transit Feed Specification (GTFS) feeds—or administrative route maps. While these datasets are invaluable for designing structural capacity, they describe a "perfect world." In reality, street-level commuters are governed by gridlock, bus bunching, vehicle breakdowns, and unannounced cancellations. 
+      "Traditional transit planning models evaluate accessibility using static GTFS schedules. In reality, street traffic, vehicle breakdowns, and headway degradation create significant deficits between scheduled accessibility and street-level reality. This paper presents a spatial analytics framework combining static feeds, GPS telemetry, and 500m grid-cell spatial indexing across metropolitan Chennai.",
+    content: `Transit accessibility models typically rely on static General Transit Feed Specification (GTFS) schedules. However, urban congestion, vehicle breakdowns, and headway degradation create significant discrepancies between scheduled service levels and actual street-level accessibility. Traditional GIS models rely heavily on static transit schedules—such as General Transit Feed Specification (GTFS) feeds—or administrative route maps. While these datasets are invaluable for designing structural capacity, they describe a "perfect world." In reality, street-level commuters are governed by gridlock, bus bunching, vehicle breakdowns, and unannounced cancellations. 
 
 If planners evaluate transit connectivity solely through static schedules, they risk overestimating accessibility, creating structural blind spots where "transit deserts" hide in plain sight.
 
-To bridge this gap, we engineered a high-performance **Chennai Multimodal Transit Connectivity and Performance Gap Dashboard**. This system integrates static GTFS schedule data for the Metropolitan Transport Corporation (MTC) bus fleet and Chennai Metro Rail (CMRL), then cross-references it with **5.5 GB of raw GPS telemetry data** representing over 560,000 coordinate pings per hour. By calculating the mathematical variance between timetabled capacity and GPS-observed reality, the system produces actionable, block-level insights for transit planners.
+To quantify these disparities across metropolitan Chennai, we developed a spatial analytics framework that integrates GTFS schedule feeds with real-time GPS telemetry from 3,500+ buses across 3,500 km². This system integrates static GTFS schedule data for the Metropolitan Transport Corporation (MTC) bus fleet and Chennai Metro Rail (CMRL), then cross-references it with **5.5 GB of raw GPS telemetry data** representing over 560,000 coordinate pings per hour. By calculating the mathematical variance between timetabled capacity and GPS-observed reality, the system produces actionable, block-level insights for transit planners.
 
 This article details the spatial engineering, algorithmic design, and mathematical frameworks we developed to make this real-time performance gap dashboard possible.
 
@@ -385,11 +385,11 @@ To represent these calculations on a map, we designed a diverging cartographic s
 
 | Score Delta (\$\\Delta NHI\$) | Map Color | Classification | Operational Diagnosis |
 | :--- | :---: | :--- | :--- |
-| \$\\le -10\\%\$ | 🔴 Deep Red | Much Worse | Severe congestion, bus bunching, and delayed operations. |
-| \$-10\\%\$ to \$-3\\%\$ | 🟡 Light Orange | Worse | Minor delays and service irregularities. |
-| \$-3\\%\$ to \$+3\\%\$ | ⚪ Light Gray | On Schedule | Operational noise; services running as scheduled. |
-| \$+3\\%\$ to \$+10\\%\$ | 🟢 Light Green | Better | Minor operational improvements. |
-| \$\\ge +10\\%\$ | 🟢 Deep Green | Much Better | High speed, regular headways, or extra service routes. |
+| \$\\le -10\\%\$ | [Severe Delay] Deep Red | Much Worse | Severe congestion, bus bunching, and delayed operations. |
+| \$-10\\%\$ to \$-3\\%\$ | [Minor Delay] Light Orange | Worse | Minor delays and service irregularities. |
+| \$-3\\%\$ to \$+3\\%\$ | [On Schedule] Light Gray | On Schedule | Operational noise; services running as scheduled. |
+| \$+3\\%\$ to \$+10\\%\$ | [Optimal] Light Green | Better | Minor operational improvements. |
+| \$\\ge +10\\%\$ | [Optimal] Deep Green | Much Better | High speed, regular headways, or extra service routes. |
 
 ### Exposing the Reality of Chennai's Transit
 When we executed the pipeline on Chennai's transit network, the results were stark:

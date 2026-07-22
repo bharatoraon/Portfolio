@@ -78,61 +78,65 @@
   }
 
   function handleMouseMove(/** @type {MouseEvent} */ e) {
-    if (isDragging) {
-      handleMove(e.clientX, e.clientY);
-    }
+    if (!isDragging) return;
+    handleMove(e.clientX, e.clientY);
+  }
+
+  function handleMouseUp() {
+    isDragging = false;
   }
 
   function handleTouchStart(/** @type {TouchEvent} */ e) {
-    isDragging = true;
-    if (e.touches.length > 0) {
+    if (e.touches.length === 1) {
+      isDragging = true;
       handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }
   }
 
   function handleTouchMove(/** @type {TouchEvent} */ e) {
-    if (isDragging && e.touches.length > 0) {
+    if (isDragging && e.touches.length === 1) {
       handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }
   }
 
   onMount(() => {
-    const globalMouseUp = () => {
-      isDragging = false;
-    };
-    window.addEventListener('mouseup', globalMouseUp);
-    window.addEventListener('touchend', globalMouseUp);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchend', handleMouseUp);
     return () => {
-      window.removeEventListener('mouseup', globalMouseUp);
-      window.removeEventListener('touchend', globalMouseUp);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchend', handleMouseUp);
     };
   });
 </script>
 
-<div class="my-8 bg-paper-warm border border-border rounded-xl overflow-hidden shadow-sm">
-  <div class="px-6 py-4 bg-white border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
-    <div>
-      <h4 class="text-sm font-semibold text-ink font-sans">Interactive Spatial Grid Index Visualizer</h4>
-      <p class="text-xs text-ink-muted">Drag the red GPS ping to see the lookup search space change dynamically.</p>
+<div class="my-10 bg-paper-mid border border-border rounded-xl overflow-hidden shadow-sm font-sans">
+  <!-- Academic Header -->
+  <div class="bg-white border-b border-border px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-mono font-bold text-ink-muted">Figure 1</span>
+      <h4 class="text-xs md:text-sm font-sans font-semibold text-ink">
+        Spatial Grid Indexing & Candidate Stop Filtering (500m × 500m)
+      </h4>
     </div>
-    <span class="text-xs bg-accent-subtle text-accent font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-      Interactive Demo
+    <span class="text-xs font-mono text-ink-muted hidden sm:inline">
+      Drag GPS coordinate to evaluate 3x3 search space
     </span>
   </div>
 
-  <div class="p-6 flex flex-col lg:flex-row gap-8 items-center justify-center">
+  <div class="p-6 flex flex-col lg:flex-row gap-8 items-center justify-center bg-paper">
     <div class="relative select-none touch-none">
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <svg
         bind:this={svgElement}
         width={width}
         height={height}
-        class="bg-white border border-border rounded-lg cursor-crosshair shadow-inner"
+        class="bg-white border border-border rounded-lg cursor-crosshair shadow-sm"
         onmousedown={handleMouseDown}
         onmousemove={handleMouseMove}
         ontouchstart={handleTouchStart}
         ontouchmove={handleTouchMove}
       >
+        <!-- Grid Cells -->
         {#each Array(rows) as _, r}
           {#each Array(cols) as _, c}
             {@const cx = c}
@@ -144,17 +148,18 @@
               y={padding + cy * gridSize}
               width={gridSize}
               height={gridSize}
-              stroke="#e5e5e5"
+              stroke="#e2e8f0"
               stroke-width="1"
               stroke-dasharray={isHigh && !isPrim ? "3,3" : undefined}
               fill={isPrim 
-                ? 'rgba(37, 99, 235, 0.15)' 
-                : (isHigh ? 'rgba(37, 99, 235, 0.05)' : 'transparent')}
+                ? 'rgba(37, 99, 235, 0.12)' 
+                : (isHigh ? 'rgba(37, 99, 235, 0.04)' : 'transparent')}
               class="transition-colors duration-150"
             />
           {/each}
         {/each}
 
+        <!-- Axis Labels -->
         {#each Array(cols) as _, c}
           <text 
             x={padding + c * gridSize + gridSize/2} 
@@ -176,29 +181,19 @@
           </text>
         {/each}
 
+        <!-- Stops -->
         {#each stopStatuses as stop}
           <circle
             cx={stop.x}
             cy={stop.y}
-            r={stop.isEvaluated ? 4.5 : 3.5}
-            fill={stop.isEvaluated ? '#2563eb' : '#9ca3af'}
+            r={stop.isEvaluated ? 4.5 : 3}
+            fill={stop.isEvaluated ? '#2563eb' : '#94a3b8'}
             opacity={stop.isEvaluated ? 1 : 0.4}
             class="transition-all duration-150"
           />
-          {#if stop.isEvaluated}
-            <circle
-              cx={stop.x}
-              cy={stop.y}
-              r="8"
-              fill="transparent"
-              stroke="#2563eb"
-              stroke-width="1"
-              opacity="0.3"
-              class="animate-ping"
-            />
-          {/if}
         {/each}
 
+        <!-- Active Primary Cell Highlight -->
         {#if activeCell.cx >= 0 && activeCell.cx < cols && activeCell.cy >= 0 && activeCell.cy < rows}
           <rect
             x={padding + activeCell.cx * gridSize}
@@ -212,81 +207,74 @@
           />
         {/if}
 
+        <!-- GPS Reticle Crosshair -->
+        <line x1={pingX - 12} y1={pingY} x2={pingX + 12} y2={pingY} stroke="#dc2626" stroke-width="1.5" />
+        <line x1={pingX} y1={pingY - 12} x2={pingX} y2={pingY + 12} stroke="#dc2626" stroke-width="1.5" />
         <circle
           cx={pingX}
           cy={pingY}
-          r="10"
-          fill="#ef4444"
-          stroke="#fff"
-          stroke-width="2"
-          class="shadow-md cursor-grab active:cursor-grabbing"
-        />
-        <circle
-          cx={pingX}
-          cy={pingY}
-          r="18"
-          fill="transparent"
-          stroke="#ef4444"
-          stroke-width="1"
-          opacity="0.4"
-          class="animate-ping pointer-events-none"
+          r="4"
+          fill="#dc2626"
+          stroke="#ffffff"
+          stroke-width="1.5"
+          class="shadow-sm cursor-grab active:cursor-grabbing"
         />
       </svg>
     </div>
 
     <div class="flex-1 w-full max-w-[280px] flex flex-col gap-4">
       <div class="bg-white border border-border p-4 rounded-lg shadow-sm">
-        <h5 class="text-xs uppercase tracking-wider font-semibold text-ink-muted mb-3 font-mono">Operations Audit</h5>
-        <div class="space-y-3.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-ink-light flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span>
-              GPS Ping Location
+        <h5 class="text-xs font-mono font-semibold text-ink-muted mb-3">Spatial Query State</h5>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-ink-light flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span>
+              GPS Coordinate
             </span>
-            <span class="text-xs font-mono font-semibold text-ink bg-paper-mid px-1.5 py-0.5 rounded">
-              X:{pingX.toFixed(0)}, Y:{pingY.toFixed(0)}
+            <span class="font-mono font-semibold text-ink bg-paper-mid px-1.5 py-0.5 rounded">
+              [{pingX.toFixed(0)}, {pingY.toFixed(0)}]
             </span>
           </div>
 
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-ink-light flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded bg-accent inline-block opacity-70"></span>
-              Active Grid Cell
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-ink-light flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded bg-blue-600 inline-block opacity-70"></span>
+              Active Cell & 3x3 Neighborhood
             </span>
-            <span class="text-xs font-mono font-semibold text-accent">
-              [C{activeCell.cx}, R{activeCell.cy}]
+            <span class="font-mono font-semibold text-blue-700">
+              C{activeCell.cx}, R{activeCell.cy}
             </span>
           </div>
         </div>
       </div>
 
       <div class="bg-white border border-border p-4 rounded-lg shadow-sm">
-        <h5 class="text-xs uppercase tracking-wider font-semibold text-ink-muted mb-3 font-mono">Performance Impact</h5>
+        <h5 class="text-xs font-mono font-semibold text-ink-muted mb-3">Computation Reduction</h5>
         
-        <div class="space-y-4">
+        <div class="space-y-3.5">
           <div>
             <div class="flex justify-between text-xs text-ink-light mb-1">
-              <span>Naive O(N × M) Method</span>
-              <span class="font-semibold">{totalStops} calculations</span>
+              <span>Full Search Space</span>
+              <span class="font-semibold">{totalStops} stops</span>
             </div>
-            <div class="w-full bg-paper-mid h-2 rounded overflow-hidden">
-              <div class="bg-ink-muted h-full rounded" style="width: 100%"></div>
+            <div class="w-full bg-slate-100 h-2 rounded overflow-hidden">
+              <div class="bg-slate-400 h-full rounded" style="width: 100%"></div>
             </div>
           </div>
 
           <div>
             <div class="flex justify-between text-xs text-ink-light mb-1">
-              <span>Spatial Grid Index</span>
-              <span class="font-semibold text-accent">{evaluatedCount} calculations</span>
+              <span>Indexed Candidate Stops</span>
+              <span class="font-semibold text-blue-700">{evaluatedCount} stops</span>
             </div>
-            <div class="w-full bg-paper-mid h-2 rounded overflow-hidden">
-              <div class="bg-accent h-full rounded transition-all duration-300" style="width: {(evaluatedCount / totalStops) * 100}%"></div>
+            <div class="w-full bg-slate-100 h-2 rounded overflow-hidden">
+              <div class="bg-blue-600 h-full rounded transition-all duration-300" style="width: {(evaluatedCount / totalStops) * 100}%"></div>
             </div>
           </div>
 
-          <div class="border-t border-border pt-3 mt-1 flex items-center justify-between">
-            <span class="text-xs font-semibold text-ink">Calculation Load Saved</span>
-            <span class="text-sm font-bold text-emerald-600 font-mono">
+          <div class="border-t border-border pt-3 mt-1 flex items-center justify-between text-xs">
+            <span class="font-semibold text-ink">Distance Calculations Saved</span>
+            <span class="font-mono font-bold text-emerald-700">
               -{efficiency}%
             </span>
           </div>

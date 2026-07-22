@@ -44,11 +44,11 @@
   let deltaNhi = $derived(nhiGps - nhiSch);
 
   let deltaClass = $derived(
-    deltaNhi <= -10 ? { label: 'Much Worse 🔴', color: 'text-red-600 bg-red-50 border-red-200' } :
-    (deltaNhi <= -3 ? { label: 'Worse 🟡', color: 'text-amber-600 bg-amber-50 border-amber-200' } :
-    (deltaNhi < 3 ? { label: 'On Schedule ⚪', color: 'text-ink-muted bg-paper-mid border-border' } :
-    (deltaNhi < 10 ? { label: 'Better 🟢', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' } :
-    { label: 'Much Better 🟢', color: 'text-emerald-700 bg-emerald-100 border-emerald-300' })))
+    deltaNhi <= -10 ? { label: 'Severe Delay', color: 'text-red-700 bg-red-50 border-red-200' } :
+    (deltaNhi <= -3 ? { label: 'Minor Delay', color: 'text-amber-700 bg-amber-50 border-amber-200' } :
+    (deltaNhi < 3 ? { label: 'On Schedule', color: 'text-slate-700 bg-slate-100 border-slate-200' } :
+    (deltaNhi < 10 ? { label: 'Minor Gain', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' } :
+    { label: 'Optimal', color: 'text-emerald-800 bg-emerald-100 border-emerald-300' })))
   );
 
   let selectedVar = $state(/** @type {string|null} */ (null));
@@ -77,7 +77,7 @@
     },
     speed: {
       name: 'V_avg (Average Travel Speed)',
-      formula: 'Observed speed from GPSTelemetry',
+      formula: 'Observed speed from GPS Telemetry',
       description: 'The actual speed of transit vehicles along the segment. Segment speeds below 6 km/h (severe traffic) receive zero score, while speeds above 25 km/h receive a maximum score of 100.'
     },
     resilience: {
@@ -92,243 +92,259 @@
   }
 </script>
 
-<div class="my-8 bg-white border border-border rounded-xl shadow-sm overflow-hidden font-sans">
-  <div class="border-b border-border bg-paper flex items-center justify-between px-6 py-3">
+<div class="my-10 bg-white border border-border rounded-xl shadow-sm overflow-hidden font-sans">
+  <!-- Academic Header -->
+  <div class="border-b border-border bg-paper flex flex-wrap items-center justify-between px-6 py-3.5 gap-3">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-mono font-bold text-ink-muted">Figure 2</span>
+      <h4 class="text-xs md:text-sm font-sans font-semibold text-ink">
+        Interactive Access Time & Performance Gap Model
+      </h4>
+    </div>
     <div class="flex gap-2">
       <button
         onclick={() => activeTab = 'ptal'}
-        class="px-4 py-2 text-xs font-semibold rounded-lg transition-all border {activeTab === 'ptal' ? 'bg-white text-ink border-border shadow-xs' : 'text-ink-muted border-transparent hover:text-ink'}"
+        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all border {activeTab === 'ptal' ? 'bg-white text-ink border-border shadow-xs' : 'text-ink-muted border-transparent hover:text-ink'}"
       >
-        1. PTAL Access Time & Weighting
+        PTAL Access Time Model
       </button>
       <button
         onclick={() => activeTab = 'nhi'}
-        class="px-4 py-2 text-xs font-semibold rounded-lg transition-all border {activeTab === 'nhi' ? 'bg-white text-ink border-border shadow-xs' : 'text-ink-muted border-transparent hover:text-ink'}"
+        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-all border {activeTab === 'nhi' ? 'bg-white text-ink border-border shadow-xs' : 'text-ink-muted border-transparent hover:text-ink'}"
       >
-        2. NHI Schedule vs GPS Performance
+        Network Health Index (ΔNHI)
       </button>
     </div>
-    <span class="text-xs text-ink-muted font-mono hidden md:inline">Click variables for details</span>
   </div>
 
-  <div class="p-6">
+  <div class="p-6 md:p-8">
     {#if activeTab === 'ptal'}
       <div class="space-y-6">
         <div>
-          <h4 class="text-sm font-semibold text-ink mb-1">Public Transport Accessibility Level (PTAL) Model</h4>
-          <p class="text-xs text-ink-muted">
-            The PTAL score quantifies walking access and wait times to nearby transit stops. Click on highlighted variables below to see their definition.
+          <h3 class="text-sm md:text-base font-semibold text-ink mb-1">
+            Public Transport Accessibility Level (PTAL)
+          </h3>
+          <p class="text-xs text-ink-muted leading-relaxed">
+            Models walk time to stop and scheduled wait time ($SWT$) based on headway and mode buffer.
           </p>
         </div>
 
-        <div class="bg-paper-warm border border-border p-4 rounded-lg font-serif italic text-sm md:text-base text-ink flex flex-wrap items-center gap-x-2 gap-y-1 select-none">
-          <span>AT =</span>
-          <button
-            onclick={() => selectVar('walktime')}
-            class="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-800 font-sans font-semibold hover:bg-blue-100 transition-colors cursor-pointer"
-          >
-            WalkTime
-          </button>
-          <span>+</span>
-          <button
-            onclick={() => selectVar('swt')}
-            class="px-1.5 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-800 font-sans font-semibold hover:bg-indigo-100 transition-colors cursor-pointer"
-          >
-            SWT
-          </button>
-          <span class="ml-4 font-sans font-normal text-xs text-ink-muted">where</span>
-          <button
-            onclick={() => selectVar('ai')}
-            class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-sans font-semibold hover:bg-emerald-100 transition-colors cursor-pointer"
-          >
-            AI Score = (30 / AT_dom) + 0.5 × ∑(30 / AT_k)
-          </button>
+        <!-- Formula interactive diagram -->
+        <div class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-xs overflow-x-auto shadow-inner space-y-2">
+          <div class="text-slate-400 border-b border-slate-800 pb-2 flex justify-between">
+            <span>Mathematical Formula</span>
+            <span>Variable Inspector (Click to inspect)</span>
+          </div>
+
+          <div class="pt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm md:text-base font-semibold">
+            <span class="text-slate-300">AccessTime =</span>
+            
+            <button 
+              onclick={() => selectVar('walktime')}
+              class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'walktime' ? 'bg-blue-600 text-white ring-2 ring-blue-400' : 'bg-slate-800 text-blue-400 hover:bg-slate-700'}"
+            >
+              WalkTime ({walkTime.toFixed(1)}m)
+            </button>
+            
+            <span class="text-slate-300">+</span>
+
+            <button 
+              onclick={() => selectVar('swt')}
+              class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'swt' ? 'bg-amber-600 text-white ring-2 ring-amber-400' : 'bg-slate-800 text-amber-400 hover:bg-slate-700'}"
+            >
+              SWT ({swt.toFixed(1)}m)
+            </button>
+          </div>
+
+          <div class="pt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
+            <span class="text-slate-300">Accessibility Index (AI) =</span>
+            <button 
+              onclick={() => selectVar('ai')}
+              class="px-2 py-0.5 rounded transition-all cursor-pointer {selectedVar === 'ai' ? 'bg-emerald-600 text-white ring-2 ring-emerald-400' : 'bg-slate-800 text-emerald-400 hover:bg-slate-700'}"
+            >
+              30 / AccessTime ({accessibilityIndex})
+            </button>
+          </div>
         </div>
 
+        <!-- Selected Variable Inspector -->
         {#if selectedVar && variables[selectedVar]}
-          <div class="bg-paper border-l-4 border-accent p-4 rounded-r-lg shadow-2xs space-y-1 transition-all">
-            <div class="flex items-center justify-between">
-              <h5 class="text-xs font-bold text-ink font-mono uppercase">{variables[selectedVar].name}</h5>
-              <button onclick={() => selectedVar = null} class="text-xs text-ink-muted hover:text-ink">Close ✕</button>
-            </div>
-            <p class="text-xs font-mono text-accent font-semibold">{variables[selectedVar].formula}</p>
-            <p class="text-xs text-ink-light leading-relaxed">{variables[selectedVar].description}</p>
+          <div class="bg-blue-50/50 border border-blue-200 p-4 rounded-lg text-xs space-y-1">
+            <div class="font-semibold text-blue-900">{variables[selectedVar].name}</div>
+            <div class="font-mono text-blue-700 font-medium">{variables[selectedVar].formula}</div>
+            <div class="text-blue-800/80 leading-relaxed pt-1">{variables[selectedVar].description}</div>
           </div>
         {/if}
 
-        <div class="border-t border-border pt-5 space-y-4">
-          <h5 class="text-xs uppercase tracking-wider font-mono font-semibold text-ink">Simulate PTAL Access Score</h5>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-ink-light">Walking Distance</span>
-                <span class="font-mono font-bold text-ink">{walkDistance} m</span>
-              </div>
-              <input
-                type="range"
-                min="50"
-                max="1000"
-                step="25"
-                bind:value={walkDistance}
-                class="w-full accent-accent cursor-pointer"
-              />
-              <span class="text-[10px] text-ink-muted">Walk time: {walkTime.toFixed(1)} mins</span>
+        <!-- Interactive Sliders -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-paper p-5 rounded-lg border border-border">
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <label for="walkDistance" class="font-medium text-ink">Walk Distance ($m$)</label>
+              <span class="font-mono font-bold text-ink-light">{walkDistance} m</span>
             </div>
-
-            <div>
-              <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-ink-light">Scheduled Headway</span>
-                <span class="font-mono font-bold text-ink">{headway} mins</span>
-              </div>
-              <input
-                type="range"
-                min="3"
-                max="45"
-                step="1"
-                bind:value={headway}
-                class="w-full accent-accent cursor-pointer"
-              />
-              <span class="text-[10px] text-ink-muted">Wait time (SWT): {swt.toFixed(1)} mins</span>
-            </div>
-
-            <div>
-              <label for="transit-mode-select" class="block text-xs text-ink-light mb-1.5">Transit Mode Margin</label>
-              <select
-                id="transit-mode-select"
-                bind:value={mode}
-                class="w-full bg-paper border border-border rounded p-2 text-xs text-ink focus:outline-none focus:border-accent"
-              >
-                <option value="bus">Bus (+2.00 min margin)</option>
-                <option value="metro">Metro Rail (+0.75 min margin)</option>
-                <option value="suburban">Suburban Rail (+1.50 min margin)</option>
-              </select>
-              <span class="text-[10px] text-ink-muted">Mode operational overhead</span>
-            </div>
+            <input
+              id="walkDistance"
+              type="range"
+              min="50"
+              max="800"
+              step="25"
+              bind:value={walkDistance}
+              class="w-full accent-blue-600 cursor-pointer"
+            />
+            <div class="text-[11px] text-ink-muted">Walk Time: {walkTime.toFixed(1)} min</div>
           </div>
 
-          <div class="bg-paper p-4 rounded-lg border border-border flex items-center justify-between mt-4">
-            <div>
-              <span class="text-xs text-ink-muted block">Total Access Time (AT)</span>
-              <span class="text-lg font-bold font-mono text-ink">{accessTime.toFixed(1)} minutes</span>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <label for="headway" class="font-medium text-ink">Headway ($min$)</label>
+              <span class="font-mono font-bold text-ink-light">{headway} min</span>
             </div>
-            <div class="text-right">
-              <span class="text-xs text-ink-muted block">Calculated AI Contribution</span>
-              <span class="text-lg font-bold font-mono text-accent">+{accessibilityIndex} index points</span>
+            <input
+              id="headway"
+              type="range"
+              min="3"
+              max="60"
+              step="1"
+              bind:value={headway}
+              class="w-full accent-amber-600 cursor-pointer"
+            />
+            <div class="text-[11px] text-ink-muted">Scheduled Wait: {swt.toFixed(1)} min</div>
+          </div>
+
+          <div class="space-y-2">
+            <label for="mode" class="block text-xs font-medium text-ink">Transit Mode Buffer</label>
+            <select
+              id="mode"
+              bind:value={mode}
+              class="w-full text-xs font-medium bg-white border border-border rounded-md px-3 py-2 text-ink shadow-2xs focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="bus">Bus (Buffer: +2.0 min)</option>
+              <option value="suburban">Suburban Rail (Buffer: +1.5 min)</option>
+              <option value="metro">Metro Rail (Buffer: +0.75 min)</option>
+            </select>
+            <div class="text-[11px] text-ink-muted">Mode Margin: {margin} min</div>
+          </div>
+        </div>
+
+        <!-- Calculated Summary Card -->
+        <div class="bg-white border border-border p-4 rounded-lg flex flex-wrap items-center justify-between gap-4 shadow-2xs">
+          <div>
+            <div class="text-xs text-ink-muted">Total Access Time</div>
+            <div class="text-xl font-bold font-mono text-ink">{accessTime.toFixed(1)} min</div>
+          </div>
+          <div class="h-8 w-px bg-border hidden sm:block"></div>
+          <div>
+            <div class="text-xs text-ink-muted">Accessibility Index (AI)</div>
+            <div class="text-xl font-bold font-mono text-blue-700">{accessibilityIndex}</div>
+          </div>
+          <div class="h-8 w-px bg-border hidden sm:block"></div>
+          <div>
+            <div class="text-xs text-ink-muted">PTAL Access Score Category</div>
+            <div class="text-xs font-semibold font-mono text-emerald-700 mt-1">
+              {accessibilityIndex >= 5 ? 'High Access (Level 5)' : (accessibilityIndex >= 2.5 ? 'Moderate Access (Level 3-4)' : 'Low Access / Transit Desert')}
             </div>
           </div>
         </div>
       </div>
-
-    {:else if activeTab === 'nhi'}
+    {:else}
       <div class="space-y-6">
         <div>
-          <h4 class="text-sm font-semibold text-ink mb-1">Network Health Index (NHI): Schedule vs. Observed GPS</h4>
-          <p class="text-xs text-ink-muted">
-            Static schedules assume 100% reliability. This model calculates the performance gap when actual vehicle telemetry is incorporated.
+          <h3 class="text-sm md:text-base font-semibold text-ink mb-1">
+            Network Health Index Gap ($\Delta NHI$)
+          </h3>
+          <p class="text-xs text-ink-muted leading-relaxed">
+            Evaluates the gap between scheduled expectations ($NHI_{Sch}$) and empirical GPS telemetry ($NHI_{GPS}$).
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 select-none">
-          <div class="bg-paper p-4 rounded-lg border border-border space-y-2">
-            <h5 class="text-xs font-mono font-bold text-ink-muted uppercase">NHI Scheduled (Static Model)</h5>
-            <p class="text-xs font-serif italic text-ink">
-              0.3 × S_dir + 0.3 × S_trans + 0.2 × S_multi + <button onclick={() => selectVar('resilience')} class="text-indigo-600 font-sans font-semibold underline underline-offset-2">0.2 × S_resilience</button>
-            </p>
-            <div class="pt-2 border-t border-border flex justify-between items-baseline">
-              <span class="text-xs text-ink-muted">Static Score</span>
-              <span class="text-base font-mono font-bold text-ink">{nhiSch.toFixed(1)} / 100</span>
-            </div>
+        <!-- Formula interactive diagram -->
+        <div class="bg-slate-900 text-slate-100 p-5 rounded-lg font-mono text-xs overflow-x-auto shadow-inner space-y-2">
+          <div class="text-slate-400 border-b border-slate-800 pb-2 flex justify-between">
+            <span>Mathematical Formula</span>
+            <span>Components (Click to inspect)</span>
           </div>
 
-          <div class="bg-paper p-4 rounded-lg border border-accent/40 space-y-2">
-            <h5 class="text-xs font-mono font-bold text-accent uppercase">NHI GPS (Observed Model)</h5>
-            <p class="text-xs font-serif italic text-ink">
-              0.3 × S_dir + 0.3 × S_trans + 0.2 × S_multi + <button onclick={() => selectVar('cv')} class="text-amber-600 font-sans font-semibold underline underline-offset-2">0.1 × S_reliability</button> + <button onclick={() => selectVar('speed')} class="text-emerald-600 font-sans font-semibold underline underline-offset-2">0.1 × S_speed</button>
-            </p>
-            <div class="pt-2 border-t border-border flex justify-between items-baseline">
-              <span class="text-xs text-ink-muted">Dynamic Telemetry Score</span>
-              <span class="text-base font-mono font-bold text-accent">{nhiGps.toFixed(1)} / 100</span>
-            </div>
+          <div class="pt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold">
+            <span class="text-slate-300">ΔNHI = NHI_GPS ({nhiGps.toFixed(1)}) - NHI_Sch ({nhiSch.toFixed(1)}) =</span>
+            <span class="px-2.5 py-0.5 rounded font-mono text-base font-bold border {deltaClass.color}">
+              {deltaNhi > 0 ? '+' : ''}{deltaNhi.toFixed(1)} ({deltaClass.label})
+            </span>
           </div>
         </div>
 
-        {#if selectedVar && variables[selectedVar]}
-          <div class="bg-paper border-l-4 border-accent p-4 rounded-r-lg shadow-2xs space-y-1 transition-all">
-            <div class="flex items-center justify-between">
-              <h5 class="text-xs font-bold text-ink font-mono uppercase">{variables[selectedVar].name}</h5>
-              <button onclick={() => selectedVar = null} class="text-xs text-ink-muted hover:text-ink">Close ✕</button>
+        <!-- Interactive Sliders for GPS Telemetry -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-paper p-5 rounded-lg border border-border">
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <label for="cv" class="font-medium text-ink">Headway Variation ($CV$)</label>
+              <span class="font-mono font-bold text-ink-light">{cv}</span>
             </div>
-            <p class="text-xs font-mono text-accent font-semibold">{variables[selectedVar].formula}</p>
-            <p class="text-xs text-ink-light leading-relaxed">{variables[selectedVar].description}</p>
-          </div>
-        {/if}
-
-        <div class="border-t border-border pt-5 space-y-4">
-          <h5 class="text-xs uppercase tracking-wider font-mono font-semibold text-ink">Adjust Real-World Telemetry Variables</h5>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-ink-light">Headway CV (Irregularity)</span>
-                <span class="font-mono font-bold text-ink">{cv.toFixed(2)}</span>
-              </div>
-              <input
-                type="range"
-                min="0.0"
-                max="1.5"
-                step="0.05"
-                bind:value={cv}
-                class="w-full accent-accent cursor-pointer"
-              />
-              <span class="text-[10px] text-ink-muted">0.0 = Regular, >1.0 = Bunching</span>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-ink-light">Average Bus Speed</span>
-                <span class="font-mono font-bold text-ink">{speed} km/h</span>
-              </div>
-              <input
-                type="range"
-                min="4"
-                max="35"
-                step="1"
-                bind:value={speed}
-                class="w-full accent-accent cursor-pointer"
-              />
-              <span class="text-[10px] text-ink-muted">&lt;6 km/h = Severe Traffic</span>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs mb-1.5">
-                <span class="text-ink-light">Overlapping Routes</span>
-                <span class="font-mono font-bold text-ink">{routesCount} routes</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="8"
-                step="1"
-                bind:value={routesCount}
-                class="w-full accent-accent cursor-pointer"
-              />
-              <span class="text-[10px] text-ink-muted">Network redundancy</span>
+            <input
+              id="cv"
+              type="range"
+              min="0.0"
+              max="1.2"
+              step="0.05"
+              bind:value={cv}
+              class="w-full accent-blue-600 cursor-pointer"
+            />
+            <div class="text-[11px] text-ink-muted">
+              {cv <= 0.2 ? 'Regular (On Time)' : (cv <= 0.6 ? 'Moderate Irregularity' : 'Severe Bunching')}
             </div>
           </div>
 
-          <div class="bg-paper p-4 rounded-lg border border-border flex items-center justify-between mt-4">
-            <div>
-              <span class="text-xs text-ink-muted block">Performance Gap (Δ NHI)</span>
-              <span class="text-base font-bold font-mono text-ink">
-                {deltaNhi >= 0 ? '+' : ''}{deltaNhi.toFixed(1)} points
-              </span>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <label for="speed" class="font-medium text-ink">Avg Travel Speed ($km/h$)</label>
+              <span class="font-mono font-bold text-ink-light">{speed} km/h</span>
             </div>
-            <div>
-              <span class="text-xs text-ink-muted block text-right">Status Classification</span>
-              <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold border font-mono mt-0.5 {deltaClass.color}">
-                {deltaClass.label}
-              </span>
+            <input
+              id="speed"
+              type="range"
+              min="6"
+              max="25"
+              step="1"
+              bind:value={speed}
+              class="w-full accent-emerald-600 cursor-pointer"
+            />
+            <div class="text-[11px] text-ink-muted">Speed Score: {sSpeed.toFixed(0)} / 100</div>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <label for="routesCount" class="font-medium text-ink">Overlapping Routes</label>
+              <span class="font-mono font-bold text-ink-light">{routesCount} routes</span>
+            </div>
+            <input
+              id="routesCount"
+              type="range"
+              min="1"
+              max="8"
+              step="1"
+              bind:value={routesCount}
+              class="w-full accent-purple-600 cursor-pointer"
+            />
+            <div class="text-[11px] text-ink-muted">Resilience: {sResilience.toFixed(0)} / 100</div>
+          </div>
+        </div>
+
+        <!-- Calculated Summary Card -->
+        <div class="bg-white border border-border p-4 rounded-lg flex flex-wrap items-center justify-between gap-4 shadow-2xs">
+          <div>
+            <div class="text-xs text-ink-muted">Scheduled Index ($NHI_{Sch}$)</div>
+            <div class="text-xl font-bold font-mono text-ink">{nhiSch.toFixed(1)}</div>
+          </div>
+          <div class="h-8 w-px bg-border hidden sm:block"></div>
+          <div>
+            <div class="text-xs text-ink-muted">GPS Telemetry Index ($NHI_{GPS}$)</div>
+            <div class="text-xl font-bold font-mono text-blue-700">{nhiGps.toFixed(1)}</div>
+          </div>
+          <div class="h-8 w-px bg-border hidden sm:block"></div>
+          <div>
+            <div class="text-xs text-ink-muted">Performance Deficit ($\Delta NHI$)</div>
+            <div class="text-sm font-semibold font-mono px-2 py-0.5 rounded border mt-1 inline-block {deltaClass.color}">
+              {deltaNhi > 0 ? '+' : ''}{deltaNhi.toFixed(1)} ({deltaClass.label})
             </div>
           </div>
         </div>
