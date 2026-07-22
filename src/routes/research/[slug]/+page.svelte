@@ -8,6 +8,9 @@
   import PipelineFlow from '$lib/components/PipelineFlow.svelte';
   import GridSimulator from '$lib/components/GridSimulator.svelte';
   import FormulaExplainer from '$lib/components/FormulaExplainer.svelte';
+  import DigitalTwinFlow from '$lib/components/DigitalTwinFlow.svelte';
+  import BuildingUseClassifier from '$lib/components/BuildingUseClassifier.svelte';
+  import EVChargingSimulator from '$lib/components/EVChargingSimulator.svelte';
 
   function escapeHtml(str) {
     return str
@@ -219,13 +222,10 @@
     <!-- Main Content Area with Marked HTML & Interactive Figures -->
     <main class="space-y-6 font-sans text-base md:text-lg leading-relaxed text-ink-light">
       {#each sections as section}
-        {#if section.raw.includes('1. System Architecture') || section.raw.includes('Decoupled Spatial ETL Pipeline')}
+        <!-- Article 1 Component Triggers -->
+        {#if section.raw.includes('1. System Architecture: Decoupled Spatial ETL Pipeline')}
           <PipelineFlow />
         {/if}
-
-        <div class="prose-custom">
-          {@html section.html}
-        </div>
 
         {#if section.raw.includes('Spatial Grid Cell Partitioning') || section.raw.includes('2. High-Performance Spatial Data Engineering')}
           <GridSimulator />
@@ -234,6 +234,23 @@
         {#if section.raw.includes('4. Mathematical Modeling') || section.raw.includes('Performance Gap')}
           <FormulaExplainer />
         {/if}
+
+        <!-- Article 2 Component Triggers -->
+        {#if section.raw.includes('Streaming & Spatial Filtering') || section.raw.includes('The System Architecture')}
+          <DigitalTwinFlow />
+        {/if}
+
+        {#if section.raw.includes('Classifying Building Use via Spatial Heuristics') || section.raw.includes('3. Classifying Building Use')}
+          <BuildingUseClassifier />
+        {/if}
+
+        {#if section.raw.includes('Non-Linear EV Battery Charging Simulator') || section.raw.includes('5. High-Performance Client-Side Rendering')}
+          <EVChargingSimulator />
+        {/if}
+
+        <div class="prose-custom">
+          {@html section.html}
+        </div>
       {/each}
 
       <!-- Footer Callout -->
